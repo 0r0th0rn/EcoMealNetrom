@@ -1,0 +1,17 @@
+﻿@namespace EcoMeal.Site.Components.BusinessList
+@using EcoMeal.Site.Components.BusinessCard
+
+@if(Businesses is null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	@foreach (var Business in Businesses)
+	{
+		<div class="col-3">
+			<BusinessCard Business="Business"></BusinessCard>
+		</div>
+	}
+}
+
