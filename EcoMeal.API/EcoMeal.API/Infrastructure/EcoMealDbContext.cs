@@ -24,35 +24,40 @@ public class EcoMealDbContext : DbContext
         modelBuilder.Entity<Business>()
             .HasOne(p => p.BusinessType)
             .WithMany(p => p.Businesses)
-            .HasForeignKey(p => p.BusinessTypeId);
+            .HasForeignKey(p => p.BusinessTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         //One Business has many Packages
         modelBuilder.Entity<Package>().HasKey(e => e.Id);
         modelBuilder.Entity<Package>()
             .HasOne(p => p.Business)
             .WithMany(p => p.Packages)
-            .HasForeignKey(p => p.BusinessId);
+            .HasForeignKey(p => p.BusinessId)
+            .OnDelete(DeleteBehavior.Cascade);
 
 
         //one PackageType has many Packages
         modelBuilder.Entity<Package>()
             .HasOne(p => p.PackageType)
             .WithMany(p => p.Packages)
-            .HasForeignKey(p => p.PackageTypeId);
+            .HasForeignKey(p => p.PackageTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         //one User has many Orders
         modelBuilder.Entity<Order>().HasKey(e => e.Id);
         modelBuilder.Entity<Order>()
             .HasOne(u => u.User)
             .WithMany(o => o.Orders)
-            .HasForeignKey(p => p.UserId);
+            .HasForeignKey(p => p.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
 
         //one Package has many Orders
         modelBuilder.Entity<Order>()
             .HasOne(p => p.Package)
             .WithMany(o => o.Orders)
-            .HasForeignKey(p => p.PackageId);
+            .HasForeignKey(p => p.PackageId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
 }

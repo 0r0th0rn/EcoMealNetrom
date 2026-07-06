@@ -188,7 +188,7 @@ namespace EcoMeal.API.Migrations
                     b.HasOne("EcoMeal.API.Entities.BusinessType", "BusinessType")
                         .WithMany("Businesses")
                         .HasForeignKey("BusinessTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BusinessType");
@@ -224,7 +224,7 @@ namespace EcoMeal.API.Migrations
                     b.HasOne("EcoMeal.API.Entities.PackageType", "PackageType")
                         .WithMany("Packages")
                         .HasForeignKey("PackageTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Business");

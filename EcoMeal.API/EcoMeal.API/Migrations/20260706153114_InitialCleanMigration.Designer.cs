@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoMeal.API.Migrations
 {
     [DbContext(typeof(EcoMealDbContext))]
-    [Migration("20260704163831_CorrectingTypos")]
-    partial class CorrectingTypos
+    [Migration("20260706153114_InitialCleanMigration")]
+    partial class InitialCleanMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,7 +55,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasIndex("BusinessTypeId");
 
-                    b.ToTable("Business");
+                    b.ToTable("Businesses");
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.BusinessType", b =>
@@ -73,7 +73,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BusinessType");
+                    b.ToTable("BusinessTypes");
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.Order", b =>
@@ -103,7 +103,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.Package", b =>
@@ -124,7 +124,7 @@ namespace EcoMeal.API.Migrations
                     b.Property<DateTime>("EndRidicare")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("NOPackage")
+                    b.Property<string>("NoPackage")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -145,7 +145,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasIndex("PackageTypeId");
 
-                    b.ToTable("Package");
+                    b.ToTable("Packages");
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.PackageType", b =>
@@ -162,7 +162,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PackageType");
+                    b.ToTable("PackageTypes");
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.User", b =>
@@ -183,7 +183,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.Business", b =>
@@ -191,7 +191,7 @@ namespace EcoMeal.API.Migrations
                     b.HasOne("EcoMeal.API.Entities.BusinessType", "BusinessType")
                         .WithMany("Businesses")
                         .HasForeignKey("BusinessTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BusinessType");
@@ -227,7 +227,7 @@ namespace EcoMeal.API.Migrations
                     b.HasOne("EcoMeal.API.Entities.PackageType", "PackageType")
                         .WithMany("Packages")
                         .HasForeignKey("PackageTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Business");
