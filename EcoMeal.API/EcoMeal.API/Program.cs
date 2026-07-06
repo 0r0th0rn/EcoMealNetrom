@@ -7,7 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_0;
+});
 
 builder.Services.AddDbContext<EcoMealDbContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -28,8 +31,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.MapControllers();
 
 app.UseAuthorization();
 

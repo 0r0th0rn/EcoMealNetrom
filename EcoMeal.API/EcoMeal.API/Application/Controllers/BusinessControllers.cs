@@ -33,16 +33,37 @@ public class BusinessController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var business = await _context.Businesses.FindAsync(id);
-        if (business is null)
+        try
         {
-            return NotFound();
+            var business = await _context.Businesses
+                .Include(b => b.Packages)
+                    .ThenInclude(p => p.Orders)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (business is null)
+            {
+                return NotFound();
+            }
+
+            // Remove orders first, then packages, then the business
+            foreach (var package in business.Packages)
+            {
+                _context.Orders.RemoveRange(package.Orders);
+            }
+            _context.Packages.RemoveRange(business.Packages);
+            _context.Businesses.Remove(business);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
-
-        _context.Businesses.Remove(business);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                error = ex.Message,
+                inner = ex.InnerException?.Message
+            });
+        }
     }
 
 }
