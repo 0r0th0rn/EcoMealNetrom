@@ -8,11 +8,11 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient("EcoMealApi", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:5000");
+    client.BaseAddress = new Uri("http://localhost:5000");
 });
 
 builder.Services.AddScoped(sp =>
-    sp.GetRequiredService<IHttpClientFactory>().CreateClient("EcoMealAPI"));
+    sp.GetRequiredService<IHttpClientFactory>().CreateClient("EcoMealApi"));
 
 builder.Services.AddScoped<EcoMeal.Site.Services.BusinessService>();
 

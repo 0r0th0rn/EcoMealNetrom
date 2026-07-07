@@ -6,12 +6,13 @@
 }
 else
 {
-	<div class="row">
+	<div class="row" justify-content-center>
 		@foreach (var business in Businesses)
 		{
-			<div class="col-md-4 mb-4">
-				<BusinessCard Business="business" />
+			<div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+				<BusinessCard Business="business" OnDeleteRequested="HandleDelete" />
 			</div>
 		}
 	</div>
 }
+
