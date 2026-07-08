@@ -8,9 +8,9 @@ public class PackageAddModel
 {
     [Required(ErrorMessage = "Numele este obligatoriu")]
     [StringLength(50)]
-    public required string Name;
+    public required string Name { get; set; }
     [Required(ErrorMessage = "Descrierea este obligatorie")]
-    public required string Description;
+    public required string Description { get; set; }
     [Required]
     [Range(0, 1000)]
     public double Price { get; set; }

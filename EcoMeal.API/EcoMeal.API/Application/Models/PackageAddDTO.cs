@@ -2,8 +2,8 @@ namespace EcoMeal.API.Models;
 
 public class PackageAddDTO
 {
-    public required string Name;
-    public required string Description;
+    public required string Name { get; set; }
+    public required string Description { get; set; }
     public decimal Price { get; set; }
     public DateTime StartPickup { get; set; }
     public DateTime EndPickup { get; set; }
