@@ -52,7 +52,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasIndex("BusinessTypeId");
 
-                    b.ToTable("Businesses");
+                    b.ToTable("Businesses", (string)null);
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.BusinessType", b =>
@@ -70,7 +70,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BusinessTypes");
+                    b.ToTable("BusinessTypes", (string)null);
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.Order", b =>
@@ -100,7 +100,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.Package", b =>
@@ -142,7 +142,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasIndex("PackageTypeId");
 
-                    b.ToTable("Packages");
+                    b.ToTable("Packages", (string)null);
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.PackageType", b =>
@@ -159,7 +159,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PackageTypes");
+                    b.ToTable("PackageTypes", (string)null);
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.User", b =>
@@ -180,7 +180,7 @@ namespace EcoMeal.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("EcoMeal.API.Entities.Business", b =>

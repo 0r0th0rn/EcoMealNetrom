@@ -2,27 +2,149 @@
 @rendermode InteractiveServer
 @using EcoMeal.Site.Models
 @using EcoMeal.Site.Services;
+@using EcoMeal.Site.Components.PackageCard;
 
 @if (Business is null)
 {
     return;
 }
 
-<div class="container my-4">
-    <h1 class="mb-3">@Business.Name</h1>
-    <p class="text-muted mb-4">@Business.Description</p>
-    <p class="text-muted mb-4"><strong>Contact:</strong> @Business.Contact</p>
-    <p class="text-muted mb-4"><strong>Tip afacere:</strong> @Business.BusinessTypeName</p>
-    <p class="text-muted mb-4"><strong>Adresa:</strong> @Business.Address</p>
+<div class="container my-5">
+    <!-- Hero Header Section -->
+    <div class="card border-0 shadow-lg mb-5 overflow-hidden rounded-4">
+        <div class="position-relative hero-img-container">
+            <img src="@GetImageForBusinessType(Business.BusinessTypeName)" class="w-100 h-100 object-fit-cover" alt="@Business.Name" />
+            <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+            
+            <div class="position-absolute bottom-0 start-0 p-4 p-md-5 text-white w-100 z-1">
+                <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+                    <div>
+                        <span class="badge bg-success mb-2 px-3 py-2 fs-6 rounded-pill shadow-sm">
+                            <i class="bi bi-shop me-1"></i> @Business.BusinessTypeName
+                        </span>
+                        <h1 class="display-4 fw-bold mb-0 custom-text-shadow">@Business.Name</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body p-4 p-md-5 bg-white">
+            <div class="row g-5">
+                <!-- About Section -->
+                <div class="col-lg-8">
+                    <h4 class="fw-bold mb-4 text-dark d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill text-primary me-2"></i> Despre noi
+                    </h4>
+                    <p class="text-secondary fs-5 lh-lg mb-0">
+                        @(string.IsNullOrWhiteSpace(Business.Description) ? "Nu există descriere disponibilă." : Business.Description)
+                    </p>
+                </div>
+                
+                <!-- Contact & Location Card -->
+                <div class="col-lg-4">
+                    <div class="bg-light rounded-4 p-4 h-100 border-0 shadow-sm custom-contact-card">
+                        <h5 class="fw-bold mb-4 text-dark">Contact & Locație</h5>
+                        
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm">
+                                <i class="bi bi-geo-alt-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-muted small text-uppercase fw-semibold mb-1">Adresă</span>
+                                <span class="text-dark fw-medium">@Business.Address</span>
+                            </div>
+                        </div>
 
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm">
+                                <i class="bi bi-telephone-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-muted small text-uppercase fw-semibold mb-1">Telefon</span>
+                                <span class="text-dark fw-medium">@Business.Contact</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
-        <h2 class="mb-0">Pachete</h2>
-        <button type="button" class="btn btn-primary" @onclick="NavigateToAddPackage">
-            + Adaugă pachet
+    <!-- Packages Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
+        <h2 class="fw-bold text-dark mb-0 d-flex align-items-center">
+            <i class="bi bi-box2-heart-fill text-danger me-3 fs-3"></i> Pachete Disponibile
+        </h2>
+        <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold btn-hover-effect" @onclick="NavigateToAddPackage">
+            <i class="bi bi-plus-lg me-2"></i> Adaugă pachet
         </button>
     </div>
+
+    @if (Business.Packages.Count == 0)
+    {
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm empty-state-container">
+            <div class="empty-state-icon bg-light rounded-circle mx-auto mb-4 d-flex align-items-center justify-content-center">
+                <i class="bi bi-inbox text-muted fs-1"></i>
+            </div>
+            <h4 class="text-dark fw-bold mb-2">Niciun pachet</h4>
+            <p class="text-muted mb-0 fs-5">Această afacere nu are pachete listate momentan.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var package in Business.Packages)
+            {
+                <div class="col">
+                    <PackageCard Package="package" />
+                </div>
+            }
+        </div>
+    }
 </div>
+
+<style>
+    .hero-img-container {
+        height: 350px;
+    }
+    
+    .hero-overlay {
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%);
+    }
+
+    .custom-text-shadow {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+    }
+    
+    .custom-contact-card:hover .icon-box {
+        transform: scale(1.1);
+    }
+
+    .empty-state-container {
+        border: 2px dashed #dee2e6;
+    }
+    
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+    }
+
+    .btn-hover-effect {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-hover-effect:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+</style>
 
 @code {
     [Parameter]
@@ -43,5 +165,40 @@
     public void NavigateToAddPackage()
     {
         NavigationManager.NavigateTo($"business/{Id}/addPackage");
+    }
+
+    private string GetImageForBusinessType(string? typeName)
+    {
+        string defaultImage = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop";
+
+        if (string.IsNullOrWhiteSpace(typeName))
+        {
+            return defaultImage;
+        }
+
+        string lowerType = typeName.ToLower();
+
+        if (lowerType.Contains("patiserie") || lowerType.Contains("brutarie"))
+        {
+            return "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200&auto=format&fit=crop";
+        }
+        else if (lowerType.Contains("pizza") || lowerType.Contains("pizzerie"))
+        {
+            return "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1200&auto=format&fit=crop";
+        }
+        else if (lowerType.Contains("restaurant") || lowerType.Contains("bistro"))
+        {
+            return "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=1200&auto=format&fit=crop";
+        }
+        else if (lowerType.Contains("supermarket") || lowerType.Contains("magazin") || lowerType.Contains("market"))
+        {
+            return "https://images.unsplash.com/photo-1578916171728-46686eac8d58?q=80&w=1200&auto=format&fit=crop";
+        }
+        else if (lowerType.Contains("fast-food") || lowerType.Contains("fast food"))
+        {
+            return "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1200&auto=format&fit=crop";
+        }
+
+        return defaultImage;
     }
 }

@@ -1,12 +1,12 @@
-namespace EcoMeal.Site.Models;
+namespace EcoMeal.API.Models;
 
-public class PackageGetModel
+public class PackageGetDTO
 {
     public int Id { get; set; }
-    public string Name { get; set; } = "";
+    public required string Name { get; set; }
     public string? Description { get; set; }
     public decimal Price { get; set; }
     public DateTime StartPickup { get; set; }
     public DateTime EndPickup { get; set; }
-    public string PackageTypeName { get; set; } = "";
+    public required string PackageTypeName { get; set; }
 }

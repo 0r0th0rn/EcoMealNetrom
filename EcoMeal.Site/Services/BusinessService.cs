@@ -30,6 +30,12 @@ public class BusinessService
     {
         await _http.PostAsJsonAsync($"api/business/{businessId}/addPackage", package);
     }
+
+    public async Task<List<PackageTypeModel>> GetPackageTypesAsync()
+    {
+        var packageTypes = await _http.GetFromJsonAsync<List<PackageTypeModel>>("api/PackageType");
+        return packageTypes ?? new List<PackageTypeModel>();
+    }
 }
 
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using EcoMeal.API.Entities;
 
 namespace EcoMeal.API.Infrastructure;

@@ -80,6 +80,16 @@ public class BusinessController : ControllerBase
                 Description = b.Description,
                 Contact = b.Contact,
                 BusinessTypeName = b.BusinessType.Name,
+                Packages = b.Packages.Select(p => new PackageGetDTO
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    StartPickup = p.StartRidicare,
+                    EndPickup = p.EndRidicare,
+                    PackageTypeName = p.PackageType != null ? p.PackageType.Name : ""
+                }).ToList()
             })
             .FirstOrDefaultAsync(b => b.Id == id);
         if (business is null)
