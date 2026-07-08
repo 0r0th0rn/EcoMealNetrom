@@ -1,5 +1,6 @@
 using EcoMeal.API.Entities;
 using EcoMeal.API.Infrastructure;
+using EcoMeal.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -65,5 +66,48 @@ public class BusinessController : ControllerBase
             });
         }
     }
+    [HttpGet("{id}")]
+    public async Task<ActionResult<BusinessDetailsDTO>> GetOneById(int id)
+    {
+        var business = await _context.Businesses
+            .Include(b => b.Packages)
+            .ThenInclude(p => p.PackageType)
+            .Select(b => new BusinessDetailsDTO
+            {
+                Id = b.Id,
+                Name = b.Name,
+                Address = b.Address,
+                Description = b.Description,
+                Contact = b.Contact,
+                BusinessTypeName = b.BusinessType.Name,
+            })
+            .FirstOrDefaultAsync(b => b.Id == id);
+        if (business is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(business);
+    }
+    [HttpPost]
+    [Route("{id}/addPackage")]
+    public async Task<IActionResult> AddPackageToBusiness(int id, [FromBody] PackageAddDTO package)
+    {
+        _context.Packages.Add(new Package
+        {
+            Name = package.Name,
+            Description = package.Description,
+            Price = package.Price,
+            StartRidicare = package.StartPickup,
+            EndRidicare = package.EndPickup,
+            PackageTypeId = package.PackageTypeId,
+            BusinessId = id,
+        });
+
+        await _context.SaveChangesAsync();
+
+        return Created();
+    }
 
 }
+

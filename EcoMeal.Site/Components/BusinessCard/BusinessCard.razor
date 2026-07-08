@@ -1,7 +1,7 @@
 ﻿@using EcoMeal.Site.Models
 @inject IJSRuntime JS
 
-<div class="card h-100 border-0 shadow-sm custom-card-hover">
+<div class="card h-100 border-0 shadow-sm custom-card-hover" @onclick="NavigateToDetails">
     <div class="position-absolute top-0 end-0 m-3 z-1">
         <span class="badge bg-success bg-opacity-75 rounded-pill px-3 py-2 shadow-sm backdrop-blur">
             <i class="bi bi-leaf-fill me-1"></i> Eco
@@ -16,7 +16,7 @@
         <h5 class="card-title fw-bold text-dark mb-1">@Business.Name</h5>
         <p class="text-muted small mb-3 fw-medium">
             <i class="bi bi-shop text-warning me-1"></i> @(string.IsNullOrEmpty(Business.BusinessTypeName) ? "Magazin" :
-                                                                                                Business.BusinessTypeName)
+                                                                                                                                    Business.BusinessTypeName)
         </p>
 
         <p class="card-text text-secondary mb-2 fs-6 d-flex align-items-center">
@@ -34,7 +34,8 @@
     </div>
 
     <div class="card-footer bg-transparent border-0 pb-3 pt-0">
-        <button class="btn btn-outline-danger w-100 rounded-pill fw-semibold btn-hover-danger" @onclick="ConfirmDelete">
+        <button class="btn btn-outline-danger w-100 rounded-pill fw-semibold btn-hover-danger" @onclick="ConfirmDelete"
+                @onclick:stopPropagation="true">
             <i class="bi bi-trash3-fill me-2"></i> Șterge
         </button>
     </div>

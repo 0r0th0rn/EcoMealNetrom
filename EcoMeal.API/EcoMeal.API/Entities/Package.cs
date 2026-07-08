@@ -6,15 +6,15 @@ public class Package
 {
     public int Id { get; set; }
     [MaxLength(50)]
-    public required string NoPackage { get; set; }
+    public required string Name { get; set; }
     [MaxLength(500)]
     public string? Description { get; set; }
     public required decimal Price { get; set; }
     public required DateTime StartRidicare { get; set; }
     public required DateTime EndRidicare { get; set; }
     public int BusinessId { get; set; }
-    public required Business Business { get; set; }
+    public Business? Business { get; set; }
     public int PackageTypeId { get; set; }
-    public required PackageType PackageType { get; set; }
+    public PackageType? PackageType { get; set; }
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 }

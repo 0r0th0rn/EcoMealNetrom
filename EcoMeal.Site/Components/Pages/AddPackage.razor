@@ -1,0 +1,38 @@
+@page "/business/{BusinessId:int}/addPackage"
+
+
+<h2>Adauga pachet</h2>
+
+<EditForm Model="PackageAddModel" OnValidSubmit="AddPackageToBusiness">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label class=form-label>Nume</label>
+    <InputText class="form-control mb-2" @bind-Value="PackageAddModel.Name" placeholder="Adauga nume pachet" />
+    <ValidationMessage For="@(() => PackageAddModel.Name)"></ValidationMessage>
+
+    <label class=form-label>Decriere</label>
+    <InputTextArea class="form-control mb-2" @bind-Value="PackageAddModel.Description"
+                   placeholder="Adauga descriere pachet" />
+
+    <label class=form-label>Pret</label>
+    <InputNumber class="form-control mb-2" @bind-Value="PackageAddModel.Price" placeholder="0" />
+
+    <label class="form-label">Start Pick-up</label>
+    <InputDate @bind-Value="PackageAddModel.StartPickup" Type="InputDateType.DateTimeLocal" placeholder="Start Pick-up"
+               class="form-control mb-2" />
+
+    <label class="form-label">End Pick-up</label>
+    <InputDate @bind-Value="PackageAddModel.EndPickup" Type="InputDateType.DateTimeLocal" placeholder="End Pick-up"
+               class="form-control mb-2" />
+
+    <label class="form-label">Tip pachet</label>
+    <InputSelect @bind-Value="PackageAddModel.PackageTypeId" class="form-control mb-2">
+        <option value="0" disabled>Alege tipul...</option>
+        @* @foreach (var packageType in PackageTypes)
+        {
+            <option value="@packageType.Id">@packageType.Name</option>
+        } *@
+    </InputSelect>
+    <button type="submit" class="btn btn-primary mt-3">Adaugă pachet</button>
+</EditForm>
