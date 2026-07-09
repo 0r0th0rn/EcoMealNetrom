@@ -1,0 +1,53 @@
+@page "/editBusiness/{BusinessId:int}"
+@rendermode InteractiveServer
+
+<div class="container my-5">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-primary text-white p-4 border-0">
+            <h3 class="mb-1 fw-bold text-shadow-sm">Editează Afacerea</h3>
+        </div>
+
+        <div class="card-body p-4 p-md-5 bg-white">
+            <EditForm Model="BusinessEditModel" OnValidSubmit="UpdateBusiness">
+                <DataAnnotationsValidator />
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-secondary">Nume Afacere</label>
+                    <InputText class="form-control form-control-lg" @bind-Value="BusinessEditModel.Name" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-secondary">Adresă</label>
+                    <InputText class="form-control form-control-lg" @bind-Value="BusinessEditModel.Address" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-secondary">Contact</label>
+                    <InputText class="form-control form-control-lg" @bind-Value="BusinessEditModel.Contact" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-secondary">Descriere</label>
+                    <InputTextArea class="form-control" @bind-Value="BusinessEditModel.Description" rows="3" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-secondary">Tip Afacere</label>
+                    <InputSelect class="form-select form-select-lg" @bind-Value="BusinessEditModel.BusinessTypeId">
+                        <option value="0" disabled>-- Alege tipul afacerii --</option>
+                        @foreach (var type in BusinessTypes)
+                        {
+                            <option value="@type.Id">@type.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="d-flex justify-content-between mt-5">
+                    <button type="button" class="btn btn-light px-4 rounded-pill" @onclick="GoBack">Înapoi</button>
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">Salvează
+                        Modificările</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>

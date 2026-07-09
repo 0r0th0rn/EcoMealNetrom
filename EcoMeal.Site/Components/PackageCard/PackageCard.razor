@@ -1,5 +1,7 @@
 @namespace EcoMeal.Site.Components.PackageCard
 @using EcoMeal.Site.Models
+@using EcoMeal.Site.Services
+@inject NavigationManager NavigationManager
 
 <div class="card h-100 border-0 shadow-sm pkg-card-hover">
     <div class="position-relative">
@@ -38,6 +40,16 @@
             </div>
         </div>
     </div>
+
+    <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+        <button class="btn btn-outline-warning btn-sm rounded-pill px-3" @onclick="NavigateToEdit">
+            <i class="bi bi-pencil-fill me-2"></i> Editează
+        </button>
+        <button class="btn btn-outline-danger btn-sm rounded-pill px-3" @onclick="OnDeleteClicked">
+            <i class="bi bi-trash me-1"></i> Șterge
+        </button>
+    </div>
+
 </div>
 
 <style>
@@ -68,12 +80,41 @@
     .pkg-backdrop-blur {
         backdrop-filter: blur(4px);
     }
+
+    .btn-hover-edit {
+        transition: all 0.2s;
+    }
+
+    .btn-hover-edit:hover {
+        background-color: #ffc107;
+        color: #212529;
+        transform: scale(1.02);
+    }
 </style>
 
 @code {
     [Parameter]
     public required PackageGetModel Package { get; set; }
 
+    [Parameter]
+    public int BusinessId { get; set; }
+
+    private void NavigateToEdit()
+    {
+        NavigationManager.NavigateTo($"/business/{BusinessId}/editPackage/{Package.Id}");
+    }
+
+    [Parameter] public EventCallback<int> OnPackageDeleted { get; set; }
+
+    [Inject] public required BusinessService BusinessService { get; set; }
+    private async Task OnDeleteClicked()
+    {
+        var succes = await BusinessService.DeletePackageAsync(Package.Id);
+        if (succes)
+        {
+            await OnPackageDeleted.InvokeAsync(Package.Id);
+        }
+    }
     private string GetImageForPackageType(string? typeName)
     {
         string defaultImage = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=400&auto=format&fit=crop";
