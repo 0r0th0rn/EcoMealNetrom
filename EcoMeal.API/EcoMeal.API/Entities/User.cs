@@ -1,9 +1,9 @@
-﻿namespace EcoMeal.API.Entities;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class User
+namespace EcoMeal.API.Entities;
+
+public class User : IdentityUser<int>
 {
-    public int Id { get; set; }
-    public required string Name { get; set; }
-    public required string Contact { get; set; }
-    public ICollection<Order> Orders { get; set; } = new List<Order>();
+    public string? Name { get; set; }
+    public string? Contact { get; set; }
 }

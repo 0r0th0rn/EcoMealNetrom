@@ -1,13 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using EcoMeal.API.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace EcoMeal.API.Infrastructure;
 
-public class EcoMealDbContext : DbContext
+public class EcoMealDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public EcoMealDbContext(DbContextOptions<EcoMealDbContext> options)
         : base(options) { }
-    public DbSet<User> Users { get; set; }
     public DbSet<BusinessType> BusinessTypes { get; set; }
     public DbSet<PackageType> PackageTypes { get; set; }
     public DbSet<Business> Businesses { get; set; }
@@ -15,6 +16,7 @@ public class EcoMealDbContext : DbContext
     public DbSet<Order> Orders { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         //solved warn about Price precision
         modelBuilder.Entity<Package>()
             .Property(p => p.Price)
@@ -45,11 +47,11 @@ public class EcoMealDbContext : DbContext
 
         //one User has many Orders
         modelBuilder.Entity<Order>().HasKey(e => e.Id);
-        modelBuilder.Entity<Order>()
-            .HasOne(u => u.User)
-            .WithMany(o => o.Orders)
-            .HasForeignKey(p => p.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        //modelBuilder.Entity<Order>()
+        //.HasOne(u => u.User)
+        //.WithMany(o => o.Orders)
+        //.HasForeignKey(p => p.UserId)
+        //.OnDelete(DeleteBehavior.Cascade);
 
 
         //one Package has many Orders
