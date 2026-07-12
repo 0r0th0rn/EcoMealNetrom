@@ -68,18 +68,26 @@ public class AuthService
 
     public async Task LoadTokenAsync()
     {
-        var tokenResult = await _localStorage.GetAsync<string>("authToken");
-        Token = tokenResult.Success ? tokenResult.Value : null;
-
-        if (Token != null)
+        try
         {
-            var rolesResult = await _localStorage.GetAsync<List<string>>("userRoles");
-            var roles = rolesResult.Success && rolesResult.Value != null ? rolesResult.Value : new List<string>();
+            var tokenResult = await _localStorage.GetAsync<string>("authToken");
+            Token = tokenResult.Success ? tokenResult.Value : null;
 
-            if (_authStateProvider is CustomAuthenticationStateProvider customProvider)
+            if (Token != null)
             {
-                customProvider.NotifyUserAuthentication(Token, roles);
+                var rolesResult = await _localStorage.GetAsync<List<string>>("userRoles");
+                var roles = rolesResult.Success && rolesResult.Value != null ? rolesResult.Value : new List<string>();
+
+                if (_authStateProvider is CustomAuthenticationStateProvider customProvider)
+                {
+                    customProvider.NotifyUserAuthentication(Token, roles);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading token: {ex.Message}");
+            Token = null;
         }
     }
 

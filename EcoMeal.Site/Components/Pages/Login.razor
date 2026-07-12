@@ -5,32 +5,140 @@
 @inject AuthService AuthService
 @inject NavigationManager Navigation
 
-<h3>Login</h3>
+<div class="login-page min-vh-100 d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="row g-0">
+                        <!-- Left Side — Branding Panel -->
+                        <div class="col-md-5 d-none d-md-flex login-brand-panel position-relative">
+                            <div class="login-brand-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+                            <div class="d-flex flex-column justify-content-between p-5 position-relative z-1 w-100">
+                                <div>
+                                    <img src="/EcoMealImages/EcoMeal.logo.png" alt="EcoMeal Logo" class="mb-4" style="width: 64px; height: 64px; object-fit: contain; filter: brightness(0) invert(1);" />
+                                    <h2 class="text-white fw-bold mb-3">Bine ai revenit!</h2>
+                                    <p class="text-white-50 lh-lg">Salvează mâncare, salvează planeta. Autentifică-te pentru a accesa pachetele disponibile în zona ta.</p>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-white bg-opacity-25 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                                            <i class="bi bi-leaf-fill text-white"></i>
+                                        </div>
+                                        <span class="text-white small">Reduce risipa alimentară</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-white bg-opacity-25 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                                            <i class="bi bi-bag-check-fill text-white"></i>
+                                        </div>
+                                        <span class="text-white small">Pachete la prețuri reduse</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-white bg-opacity-25 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                                            <i class="bi bi-geo-alt-fill text-white"></i>
+                                        </div>
+                                        <span class="text-white small">Afaceri locale lângă tine</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-danger">@errorMessage</div>
-}
+                        <!-- Right Side — Login Form -->
+                        <div class="col-md-7">
+                            <div class="p-4 p-md-5">
+                                <div class="text-center mb-4 d-md-none">
+                                    <img src="/EcoMealImages/EcoMeal.logo.png" alt="EcoMeal Logo" style="width: 48px; height: 48px; object-fit: contain;" class="mb-2" />
+                                </div>
 
-<EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="loginForm">
-    <DataAnnotationsValidator />
+                                <h3 class="fw-bold text-dark mb-1">Autentificare</h3>
+                                <p class="text-muted mb-4">Introdu datele tale pentru a continua</p>
 
-    <div class="mb-3">
-        <label class="form-label">Email</label>
-        <InputText class="form-control" @bind-Value="loginModel.Email" />
-        <ValidationMessage For="() => loginModel.Email" />
+                                @if (!string.IsNullOrEmpty(errorMessage))
+                                {
+                                    <div class="alert alert-danger shadow-sm rounded-3 d-flex align-items-center" role="alert">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        <span>@errorMessage</span>
+                                    </div>
+                                }
+
+                                <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="loginForm">
+                                    <DataAnnotationsValidator />
+
+                                    <div class="mb-4">
+                                        <label class="form-label fw-semibold text-secondary small text-uppercase">Email</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text border-0 bg-light rounded-start-3 text-secondary">
+                                                <i class="bi bi-envelope-fill"></i>
+                                            </span>
+                                            <InputText class="form-control form-control-lg bg-light border-0 rounded-end-3 login-input-focus" @bind-Value="loginModel.Email" placeholder="email@exemplu.com" />
+                                        </div>
+                                        <ValidationMessage For="() => loginModel.Email" class="text-danger small mt-1" />
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label fw-semibold text-secondary small text-uppercase">Parolă</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text border-0 bg-light rounded-start-3 text-secondary">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </span>
+                                            <InputText type="password" class="form-control form-control-lg bg-light border-0 rounded-end-3 login-input-focus" @bind-Value="loginModel.Password" placeholder="••••••••" />
+                                        </div>
+                                        <ValidationMessage For="() => loginModel.Password" class="text-danger small mt-1" />
+                                    </div>
+
+                                    <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill fw-bold shadow-sm login-btn-hover mb-4">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i> Autentifică-te
+                                    </button>
+                                </EditForm>
+
+                                <div class="text-center">
+                                    <p class="text-muted mb-0">
+                                        Nu ai cont?
+                                        <a href="/register" class="text-success fw-semibold text-decoration-none login-link-hover">Creează un cont</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label class="form-label">Password</label>
-        <InputText type="password" class="form-control" @bind-Value="loginModel.Password" />
-        <ValidationMessage For="() => loginModel.Password" />
-    </div>
+<style>
+    .login-page {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f0 100%);
+    }
 
-    <button type="submit" class="btn btn-primary">Login</button>
-</EditForm>
+    .login-brand-panel {
+        background: linear-gradient(135deg, #198754 0%, #0f5132 100%);
+    }
 
-<p class="mt-3">Don't have an account? <a href="/register">Register</a></p>
+    .login-brand-overlay {
+        background: url('https://images.unsplash.com/photo-1490818387583-1baba5e638af?q=80&w=800&auto=format&fit=crop') center/cover;
+        opacity: 0.15;
+    }
+
+    .login-input-focus:focus {
+        background-color: #fff !important;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25) !important;
+        border: 1px solid #198754 !important;
+    }
+
+    .login-btn-hover {
+        transition: all 0.3s ease;
+    }
+
+    .login-btn-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(25, 135, 84, 0.3) !important;
+    }
+
+    .login-link-hover:hover {
+        text-decoration: underline !important;
+    }
+</style>
 
 @code {
     [SupplyParameterFromForm]

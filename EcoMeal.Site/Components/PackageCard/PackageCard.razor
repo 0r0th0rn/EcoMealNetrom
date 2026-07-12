@@ -1,6 +1,7 @@
 @namespace EcoMeal.Site.Components.PackageCard
 @using EcoMeal.Site.Models
 @using EcoMeal.Site.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager NavigationManager
 
 <div class="card h-100 border-0 shadow-sm pkg-card-hover">
@@ -40,15 +41,16 @@
             </div>
         </div>
     </div>
-
-    <div class="card-footer bg-transparent border-0 pb-3 pt-0">
-        <button class="btn btn-outline-warning btn-sm rounded-pill px-3" @onclick="NavigateToEdit">
-            <i class="bi bi-pencil-fill me-2"></i> Editează
-        </button>
-        <button class="btn btn-outline-danger btn-sm rounded-pill px-3" @onclick="OnDeleteClicked">
-            <i class="bi bi-trash me-1"></i> Șterge
-        </button>
-    </div>
+    <AuthorizeView Roles="Admin">
+        <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+            <button class="btn btn-outline-warning btn-sm rounded-pill px-3" @onclick="NavigateToEdit">
+                <i class="bi bi-pencil-fill me-2"></i> Editează
+            </button>
+            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" @onclick="OnDeleteClicked">
+                <i class="bi bi-trash me-1"></i> Șterge
+            </button>
+        </div>
+    </AuthorizeView>
 
 </div>
 

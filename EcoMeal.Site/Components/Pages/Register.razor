@@ -5,50 +5,175 @@
 @inject AuthService AuthService
 @inject NavigationManager Navigation
 
-<h3>Register</h3>
+<div class="register-page min-vh-100 d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="row g-0">
+                        <!-- Left Side — Branding Panel -->
+                        <div class="col-md-5 d-none d-md-flex register-brand-panel position-relative">
+                            <div class="register-brand-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+                            <div class="d-flex flex-column justify-content-between p-5 position-relative z-1 w-100">
+                                <div>
+                                    <img src="/EcoMealImages/EcoMeal.logo.png" alt="EcoMeal Logo" class="mb-4" style="width: 64px; height: 64px; object-fit: contain; filter: brightness(0) invert(1);" />
+                                    <h2 class="text-white fw-bold mb-3">Alătură-te!</h2>
+                                    <p class="text-white-50 lh-lg">Creează un cont gratuit și începe să salvezi mâncarea de la afacerile locale din zona ta.</p>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-white bg-opacity-25 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                                            <i class="bi bi-person-plus-fill text-white"></i>
+                                        </div>
+                                        <span class="text-white small">Cont gratuit în 30 de secunde</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-white bg-opacity-25 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                                            <i class="bi bi-shield-check text-white"></i>
+                                        </div>
+                                        <span class="text-white small">Date protejate și sigure</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-white bg-opacity-25 rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                                            <i class="bi bi-heart-fill text-white"></i>
+                                        </div>
+                                        <span class="text-white small">Contribuie la un viitor mai verde</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <div class="alert alert-danger">@errorMessage</div>
-}
+                        <!-- Right Side — Register Form -->
+                        <div class="col-md-7">
+                            <div class="p-4 p-md-5">
+                                <div class="text-center mb-4 d-md-none">
+                                    <img src="/EcoMealImages/EcoMeal.logo.png" alt="EcoMeal Logo" style="width: 48px; height: 48px; object-fit: contain;" class="mb-2" />
+                                </div>
 
-<EditForm Model="registerModel" OnValidSubmit="HandleRegister" FormName="registerForm">
-    <DataAnnotationsValidator />
+                                <h3 class="fw-bold text-dark mb-1">Creează cont</h3>
+                                <p class="text-muted mb-4">Completează datele pentru a te înregistra</p>
 
-    <div class="mb-3">
-        <label class="form-label">Email</label>
-        <InputText class="form-control" @bind-Value="registerModel.Email" />
-        <ValidationMessage For="() => registerModel.Email" />
+                                @if (!string.IsNullOrEmpty(errorMessage))
+                                {
+                                    <div class="alert alert-danger shadow-sm rounded-3 d-flex align-items-center" role="alert">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        <span>@errorMessage</span>
+                                    </div>
+                                }
+
+                                <EditForm Model="registerModel" OnValidSubmit="HandleRegister" FormName="registerForm">
+                                    <DataAnnotationsValidator />
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-sm-6">
+                                            <label class="form-label fw-semibold text-secondary small text-uppercase">Nume</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text border-0 bg-light rounded-start-3 text-secondary">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </span>
+                                                <InputText class="form-control bg-light border-0 rounded-end-3 register-input-focus" @bind-Value="registerModel.Name" placeholder="Numele tău" />
+                                            </div>
+                                            <ValidationMessage For="() => registerModel.Name" class="text-danger small mt-1" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label class="form-label fw-semibold text-secondary small text-uppercase">Contact</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text border-0 bg-light rounded-start-3 text-secondary">
+                                                    <i class="bi bi-telephone-fill"></i>
+                                                </span>
+                                                <InputText class="form-control bg-light border-0 rounded-end-3 register-input-focus" @bind-Value="registerModel.Contact" placeholder="07xx xxx xxx" />
+                                            </div>
+                                            <ValidationMessage For="() => registerModel.Contact" class="text-danger small mt-1" />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-secondary small text-uppercase">Email</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text border-0 bg-light rounded-start-3 text-secondary">
+                                                <i class="bi bi-envelope-fill"></i>
+                                            </span>
+                                            <InputText class="form-control bg-light border-0 rounded-end-3 register-input-focus" @bind-Value="registerModel.Email" placeholder="email@exemplu.com" />
+                                        </div>
+                                        <ValidationMessage For="() => registerModel.Email" class="text-danger small mt-1" />
+                                    </div>
+
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-sm-6">
+                                            <label class="form-label fw-semibold text-secondary small text-uppercase">Parolă</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text border-0 bg-light rounded-start-3 text-secondary">
+                                                    <i class="bi bi-lock-fill"></i>
+                                                </span>
+                                                <InputText type="password" class="form-control bg-light border-0 rounded-end-3 register-input-focus" @bind-Value="registerModel.Password" placeholder="Min. 6 caractere" />
+                                            </div>
+                                            <ValidationMessage For="() => registerModel.Password" class="text-danger small mt-1" />
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label class="form-label fw-semibold text-secondary small text-uppercase">Confirmă parola</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text border-0 bg-light rounded-start-3 text-secondary">
+                                                    <i class="bi bi-shield-lock-fill"></i>
+                                                </span>
+                                                <InputText type="password" class="form-control bg-light border-0 rounded-end-3 register-input-focus" @bind-Value="registerModel.ConfirmPassword" placeholder="Repetă parola" />
+                                            </div>
+                                            <ValidationMessage For="() => registerModel.ConfirmPassword" class="text-danger small mt-1" />
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill fw-bold shadow-sm register-btn-hover mb-4">
+                                        <i class="bi bi-person-plus-fill me-2"></i> Creează contul
+                                    </button>
+                                </EditForm>
+
+                                <div class="text-center">
+                                    <p class="text-muted mb-0">
+                                        Ai deja cont?
+                                        <a href="/login" class="text-success fw-semibold text-decoration-none register-link-hover">Autentifică-te</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label class="form-label">Password</label>
-        <InputText type="password" class="form-control" @bind-Value="registerModel.Password" />
-        <ValidationMessage For="() => registerModel.Password" />
-    </div>
+<style>
+    .register-page {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f0 100%);
+    }
 
-    <div class="mb-3">
-        <label class="form-label">Confirm Password</label>
-        <InputText type="password" class="form-control" @bind-Value="registerModel.ConfirmPassword" />
-        <ValidationMessage For="() => registerModel.ConfirmPassword" />
-    </div>
+    .register-brand-panel {
+        background: linear-gradient(135deg, #198754 0%, #0f5132 100%);
+    }
 
-    <div class="mb-3">
-        <label class="form-label">Name</label>
-        <InputText class="form-control" @bind-Value="registerModel.Name" />
-        <ValidationMessage For="() => registerModel.Name" />
-    </div>
+    .register-brand-overlay {
+        background: url('https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=800&auto=format&fit=crop') center/cover;
+        opacity: 0.15;
+    }
 
-    <div class="mb-3">
-        <label class="form-label">Contact Info</label>
-        <InputText class="form-control" @bind-Value="registerModel.Contact" />
-        <ValidationMessage For="() => registerModel.Contact" />
-    </div>
+    .register-input-focus:focus {
+        background-color: #fff !important;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25) !important;
+        border: 1px solid #198754 !important;
+    }
 
-    <button type="submit" class="btn btn-primary">Register</button>
-</EditForm>
+    .register-btn-hover {
+        transition: all 0.3s ease;
+    }
 
-<p class="mt-3">Already have an account? <a href="/login">Login</a></p>
+    .register-btn-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(25, 135, 84, 0.3) !important;
+    }
+
+    .register-link-hover:hover {
+        text-decoration: underline !important;
+    }
+</style>
 
 @code {
     [SupplyParameterFromForm]

@@ -21,6 +21,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         try
         {
+
             var tokenResult = await _localStorage.GetAsync<string>("authToken");
             var rolesResult = await _localStorage.GetAsync<List<string>>("userRoles");
 
@@ -47,7 +48,23 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogWarning(ex, "Failed to retrieve authentication state from local storage. This is expected during pre-rendering.");
+            _logger.LogWarning(ex, "Prerendering phase: local storage not available yet.");
+            return new AuthenticationState(_anonymous);
+        }
+        catch (System.Security.Cryptography.CryptographicException ex)
+        {
+            _logger.LogWarning(ex, "Failed to decrypt local storage. Clearing corrupted tokens.");
+            try
+            {
+                await _localStorage.DeleteAsync("authToken");
+                await _localStorage.DeleteAsync("userRoles");
+            }
+            catch { }
+            return new AuthenticationState(_anonymous);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error getting authentication state.");
             return new AuthenticationState(_anonymous);
         }
     }

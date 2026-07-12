@@ -25,9 +25,9 @@ public class AuthenticationHeaderHandler : DelegatingHandler
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.Value);
             }
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to read authToken from local storage. This is expected during pre-rendering.");
+            _logger.LogWarning(ex, "Failed to read authToken from local storage.");
         }
 
         return await base.SendAsync(request, cancellationToken);

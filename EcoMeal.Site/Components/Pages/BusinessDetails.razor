@@ -3,6 +3,7 @@
 @using EcoMeal.Site.Models
 @using EcoMeal.Site.Services;
 @using EcoMeal.Site.Components.PackageCard;
+@using Microsoft.AspNetCore.Components.Authorization
 
 @if (Business is null)
 {
@@ -79,10 +80,12 @@
         <h2 class="fw-bold text-dark mb-0 d-flex align-items-center">
             <i class="bi bi-box2-heart-fill text-danger me-3 fs-3"></i> Pachete Disponibile
         </h2>
-        <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold btn-hover-effect"
-                @onclick="NavigateToAddPackage">
-            <i class="bi bi-plus-lg me-2"></i> Adaugă pachet
-        </button>
+        <AuthorizeView Roles="Admin">
+            <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold btn-hover-effect"
+                    @onclick="NavigateToAddPackage">
+                <i class="bi bi-plus-lg me-2"></i> Adaugă pachet
+            </button>
+        </AuthorizeView>
     </div>
 
     @if (Business.Packages.Count == 0)
