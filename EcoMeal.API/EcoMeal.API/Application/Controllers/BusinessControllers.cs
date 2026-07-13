@@ -127,17 +127,15 @@ public class BusinessController : ControllerBase
         var package = await _context.Packages.FindAsync(packageId);
         if (package is null)
             return NotFound();
-#pragma warning disable CS8601 // Possible null reference assignment.
         return Ok(new PackageAddDTO
         {
             Name = package.Name,
-            Description = package.Description,
+            Description = package.Description!,
             Price = package.Price,
             StartPickup = package.StartRidicare,
             EndPickup = package.EndRidicare,
             PackageTypeId = package.PackageTypeId
         });
-#pragma warning restore CS8601 // Possible null reference assignment.
     }
     [HttpPut("package/{packageId}")]
     public async Task<IActionResult> EditPackage(int packageId, [FromBody] PackageAddDTO packageDto)

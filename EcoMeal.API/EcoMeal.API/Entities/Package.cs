@@ -9,7 +9,7 @@ public class Package
     public required string Name { get; set; }
     [MaxLength(500)]
     public string? Description { get; set; }
-    public required decimal Price { get; set; }
+    public decimal Price { get; set; }
     public required DateTime StartRidicare { get; set; }
     public required DateTime EndRidicare { get; set; }
     public int BusinessId { get; set; }

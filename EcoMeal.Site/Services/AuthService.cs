@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Security.Cryptography;
 using EcoMeal.Site.Models.Auth;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -84,10 +85,14 @@ public class AuthService
                 }
             }
         }
-        catch (Exception ex)
+        catch (CryptographicException)
         {
-            Console.WriteLine($"Error loading token: {ex.Message}");
+            // The stored token was encrypted with different Data Protection keys
+            // (e.g. after an app restart that regenerated the keys). Treat it as logged
+            // out and clear the invalid data instead of crashing the circuit.
             Token = null;
+            await _localStorage.DeleteAsync("authToken");
+            await _localStorage.DeleteAsync("userRoles");
         }
     }
 

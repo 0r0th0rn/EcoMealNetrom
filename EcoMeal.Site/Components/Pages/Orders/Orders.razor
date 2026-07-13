@@ -1,0 +1,42 @@
+@page "/orders"
+
+<PageTitle>Comenzile mele</PageTitle>
+
+<div class="container">
+    <h1>Comenzile Mele</h1>
+    @if (MyOrders is null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!MyOrders.Any())
+    {
+        <div class="alert alert-light text-center text-muted">
+            Nu ai nicio comanda inca
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var order in MyOrders)
+            {
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title mb-1">@order.PackageName</h5>
+                                    <p class="text-muted samll">@order.BusinessName</p>
+                                    <p class="text-muted samll">@order.Date.ToString("dd.MM.yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge rounded-pill bg-success-subtle text-success-emphasis">@order.Status</span>
+                                <div class="fw-semibold">@order.Price RON</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
