@@ -5,22 +5,18 @@
 @inject BusinessService BusinessService
 
 <div class="search-container">
-    <!-- Input Wrapper -->
     <div class="search-input-wrapper d-flex align-items-center bg-light border rounded-pill shadow-sm px-3">
 
-        <!-- Iconiță Lupa -->
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-search text-secondary opacity-75" viewBox="0 0 16 16">
             <path
             d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
         </svg>
 
-        <!-- Input -->
         <input type="text" class="form-control border-0 bg-transparent shadow-none px-2 py-2 fw-medium text-dark"
                style="font-size: 0.95rem;" placeholder="Caută afaceri sau pachete..." @bind="SearchTerm"
                @bind:event="oninput" />
 
-        <!-- Loading Spinner (Când tastează) -->
         @if (IsSearching)
         {
             <div class="spinner-border spinner-border-sm text-primary ms-2 opacity-75" role="status">
@@ -28,7 +24,6 @@
             </div>
         }
 
-        <!-- Buton de Clear (Când există text) -->
         @if (!string.IsNullOrEmpty(SearchTerm) && !IsSearching)
         {
             <button class="btn btn-link p-0 text-secondary ms-2 opacity-75 hover-opacity-100" @onclick="ClearSearch">
@@ -40,7 +35,6 @@
         }
     </div>
 
-    <!-- Dropdown Rezultate -->
     @if (ShowResults)
     {
         <div class="search-results-dropdown shadow-lg border-0 bg-white">
@@ -127,7 +121,7 @@
 
     protected override void OnInitialized()
     {
-        _debounceTimer = new Timer(400); // Am scăzut la 400ms pentru un răspuns ușor mai rapid
+        _debounceTimer = new Timer(400);
         _debounceTimer.AutoReset = false;
         _debounceTimer.Elapsed += async (sender, args) => await PerformSearchAsync();
     }
@@ -143,7 +137,6 @@
         IsSearching = true;
         await InvokeAsync(StateHasChanged);
 
-        // Apelează DTO-ul unificat, creat anterior
         var searchResult = await BusinessService.SearchAsync(SearchTerm);
 
         FilteredBusinesses = searchResult.Businesses ?? new();

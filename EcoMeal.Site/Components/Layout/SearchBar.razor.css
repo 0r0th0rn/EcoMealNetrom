@@ -3,48 +3,42 @@
     position: relative;
 }
 
-/* Stil pentru cutia de input */
 .search-input-wrapper {
     transition: all 0.3s ease;
 }
 
-/* Efect de Focus: Fundal alb, bordură albastră și umbră specifică Bootstrap */
 .search-input-wrapper:focus-within {
     background-color: #ffffff !important;
     border-color: #86b7fe !important;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
 }
 
-/* Dropdown-ul principal */
 .search-results-dropdown {
     position: absolute;
     top: calc(100% + 12px);
     left: 0;
     right: 0;
     z-index: 1050;
-    border-radius: 1.25rem; /* Margini super rotunjite */
+    border-radius: 1.25rem;
     overflow: hidden;
     max-height: 400px;
     overflow-y: auto;
     
-    /* Animație fină de slide-down */
     animation: slideDownFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transform-origin: top center;
 }
 
-/* Titlurile secțiunilor (Afaceri / Pachete) */
 .dropdown-section-title {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.8px;
     color: #6c757d;
-    background-color: #f8f9fa; /* bg-light */
+    background-color: #f8f9fa;
     padding: 0.6rem 1.25rem;
     margin: 0;
     font-weight: 700;
 }
 
-/* Elementele din listă */
 .search-result-item {
     display: flex;
     align-items: center;
@@ -62,9 +56,8 @@
     transition: color 0.2s ease;
 }
 
-/* Hover effect deosebit: se deplasează fin la dreapta și devine albastru */
 .search-result-item:hover {
-    background-color: #f1f6ff; /* Un albastru foarte deschis */
+    background-color: #f1f6ff;
     color: #0d6efd;
     padding-left: 1.5rem;
 }
@@ -73,7 +66,6 @@
     color: #0d6efd;
 }
 
-/* Animație Keyframes */
 @keyframes slideDownFade {
     0% {
         opacity: 0;
@@ -85,7 +77,6 @@
     }
 }
 
-/* Scrollbar personalizat și subtil */
 .search-results-dropdown::-webkit-scrollbar {
     width: 6px;
 }
@@ -100,7 +91,6 @@
     background-color: #adb5bd;
 }
 
-/* Utilitar pentru butonul de clear */
 .hover-opacity-100:hover {
     opacity: 1 !important;
 }
