@@ -4,6 +4,8 @@
 @using EcoMeal.Site.Services;
 @using EcoMeal.Site.Components.PackageCard;
 @using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 @if (Business is null)
 {
@@ -104,7 +106,7 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             @foreach (var package in Business.Packages)
             {
-                <div class="col">
+                <div id="pkg-@package.Id" class="package-item col">
                     <PackageCard Package="package" BusinessId="Id" OnPackageDeleted="RefreshPackagesList" />
                 </div>
             }
@@ -219,6 +221,20 @@
         {
             Business = updatedBusiness;
             StateHasChanged();
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Navigation.Uri.Contains("#"))
+        {
+            var fragment = Navigation.Uri.Split('#').Last();
+
+            await JS.InvokeVoidAsync("eval", $@"
+                setTimeout(() => {{
+                    var element = document.getElementById('{fragment}');
+                    if(element) element.scrollIntoView({{ behavior: 'smooth' }});
+                }}, 100); // 100ms delay pentru a ne asigura că DOM-ul a desenat elementele
+            ");
         }
     }
 }

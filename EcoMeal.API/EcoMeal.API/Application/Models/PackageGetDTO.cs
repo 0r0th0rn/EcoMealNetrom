@@ -8,5 +8,6 @@ public class PackageGetDTO
     public decimal Price { get; set; }
     public DateTime StartPickup { get; set; }
     public DateTime EndPickup { get; set; }
-    public required string PackageTypeName { get; set; }
+    public string? PackageTypeName { get; set; }
+    public int BusinessId { get; set; }
 }

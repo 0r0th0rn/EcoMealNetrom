@@ -9,4 +9,6 @@ public class PackageGetModel
     public DateTime StartPickup { get; set; }
     public DateTime EndPickup { get; set; }
     public string PackageTypeName { get; set; } = "";
+    public int BusinessId { get; set; }
+
 }

@@ -70,6 +70,12 @@ public class BusinessService
     {
         await _http.PutAsJsonAsync($"api/Business/{id}", business);
     }
+
+    public async Task<SearchResultModel> SearchAsync(string searchTerm)
+    {
+        // Apelează noul endpoint din API: /api/search?q=valoare
+        return await _http.GetFromJsonAsync<SearchResultModel>($"api/search?q={searchTerm}");
+    }
 }
 
 
