@@ -3,6 +3,7 @@
 @using EcoMeal.Site.Services
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager NavigationManager
+@inject OrderService OrderService
 
 <div class="card h-100 border-0 shadow-sm pkg-card-hover">
     <div class="position-relative">
@@ -49,6 +50,27 @@
             <button class="btn btn-outline-danger btn-sm rounded-pill px-3" @onclick="OnDeleteClicked">
                 <i class="bi bi-trash me-1"></i> Șterge
             </button>
+        </div>
+    </AuthorizeView>
+    <AuthorizeView Roles="User">
+        <div class="card-footer bg-transparent border-0 pb-3 pt-0 text-center">
+            <button class="btn btn-primary rounded-pill px-4 shadow-sm w-100 btn-hover-effect" @onclick="OnOrderClicked" disabled="@isOrdering">
+                @if (isOrdering)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span>Se procesează...</span>
+                }
+                else
+                {
+                    <i class="bi bi-cart-plus me-2"></i> <span>Comandă</span>
+                }
+            </button>
+            @if (orderSuccess.HasValue)
+            {
+                <div class="mt-2 small @(orderSuccess.Value ? "text-success" : "text-danger")">
+                    @(orderSuccess.Value ? "Comandă plasată cu succes!" : "Eroare la plasarea comenzii.")
+                </div>
+            }
         </div>
     </AuthorizeView>
 
@@ -109,6 +131,10 @@
     [Parameter] public EventCallback<int> OnPackageDeleted { get; set; }
 
     [Inject] public required BusinessService BusinessService { get; set; }
+    
+    private bool isOrdering = false;
+    private bool? orderSuccess = null;
+
     private async Task OnDeleteClicked()
     {
         var succes = await BusinessService.DeletePackageAsync(Package.Id);
@@ -117,6 +143,20 @@
             await OnPackageDeleted.InvokeAsync(Package.Id);
         }
     }
+
+    private async Task OnOrderClicked()
+    {
+        isOrdering = true;
+        orderSuccess = null;
+        StateHasChanged();
+
+        var success = await OrderService.PlaceOrderAsync(Package.Id);
+        orderSuccess = success;
+        
+        isOrdering = false;
+        StateHasChanged();
+    }
+
     private string GetImageForPackageType(string? typeName)
     {
         string defaultImage = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=400&auto=format&fit=crop";
@@ -133,27 +173,31 @@
             // Fresh colorful vegetable salad
             return "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&auto=format&fit=crop";
         }
-        else if (lowerType.Contains("vegan"))
+        else if (lowerType.Contains("surprise"))
         {
-            // Vegan buddha bowl
-            return "https://images.unsplash.com/photo-1540914124281-342587941389?q=80&w=400&auto=format&fit=crop";
+            return
+"https://plus.unsplash.com/premium_photo-1728412897842-06f0fc4c2ec6?q=80&w=1245&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
         }
-        else if (lowerType.Contains("mixt"))
+        else if (lowerType.Contains("lactate"))
         {
-            // Mixed food platter
-            return "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400&auto=format&fit=crop";
+            return
+"https://images.unsplash.com/photo-1627935722051-395636b0d8a5?q=80&w=1173&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
         }
-        else if (lowerType.Contains("desert"))
+        else if (lowerType.Contains("patiserie"))
         {
-            // Colorful donuts / desserts
-            return "https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=400&auto=format&fit=crop";
+            return
+"https://images.unsplash.com/photo-1483695028939-5bb13f8648b0?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
         }
-        else if (lowerType.Contains("fructe de mare"))
+        else if (lowerType.Contains("fructe"))
         {
-            // Seafood platter
-            return "https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=80&w=400&auto=format&fit=crop";
+            return
+"https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
         }
-
+        else if (lowerType.Contains("bacanie"))
+        {
+            return
+"https://images.unsplash.com/photo-1600626324898-5af3796f6536?q=80&w=1274&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+        }
         return defaultImage;
     }
 }

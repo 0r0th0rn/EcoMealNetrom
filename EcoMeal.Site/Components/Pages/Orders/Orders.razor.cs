@@ -17,4 +17,17 @@ public partial class Orders
             StateHasChanged();
         }
     }
+
+    private async Task MarkAsCompleted(int orderId)
+    {
+        var success = await OrderService.MarkAsPickedUpAsync(orderId);
+        if (success)
+        {
+            var order = MyOrders?.FirstOrDefault(o => o.Id == orderId);
+            if (order != null)
+            {
+                order.Status = "Completata";
+            }
+        }
+    }
 }

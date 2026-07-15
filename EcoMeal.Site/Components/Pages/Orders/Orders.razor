@@ -33,6 +33,16 @@
                                 <span class="badge rounded-pill bg-success-subtle text-success-emphasis">@order.Status</span>
                                 <div class="fw-semibold">@order.Price RON</div>
                             </div>
+                            @if (order.Status == "Rezervata")
+                            {
+                                <button class="btn btn-sm btn-success" @onclick="() => OrderService.MarkAsPickedUpAsync(order.Id)">
+                                    Marchează ca Ridicată
+                                </button>
+                            }
+                            else if (order.Status == "Completata")
+                            {
+                                <span class="badge bg-success">Finalizată</span>
+                            }
                         </div>
                     </div>
                 </div>

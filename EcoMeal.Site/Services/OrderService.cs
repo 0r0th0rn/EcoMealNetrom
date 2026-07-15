@@ -50,4 +50,10 @@ public class OrderService
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _authService.Token);
         }
     }
+
+    public async Task<bool> MarkAsPickedUpAsync(int orderId)
+    {
+        var response = await _http.PatchAsync($"api/order/{orderId}/pickup", null);
+        return response.IsSuccessStatusCode;
+    }
 }

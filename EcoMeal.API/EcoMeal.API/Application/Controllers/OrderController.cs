@@ -1,14 +1,13 @@
 using System.Security.Claims;
+using EcoMeal.API.Application.Services;
 using EcoMeal.API.Entities;
 using EcoMeal.API.Infrastructure;
 using EcoMeal.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 
 namespace EcoMeal.API.Controllers;
-
 
 [ApiController]
 [Route("api/[controller]")]
@@ -16,19 +15,26 @@ namespace EcoMeal.API.Controllers;
 public class OrderController : ControllerBase
 {
     private readonly EcoMealDbContext _context;
-    public OrderController(EcoMealDbContext context)
+    private readonly IEmailService _emailService;
+
+    public OrderController(EcoMealDbContext context, IEmailService emailService)
     {
         _context = context;
+        _emailService = emailService;
     }
+
     [HttpPost]
     public async Task<ActionResult<OrderGetDTO>> PlaceOrder([FromBody] OrderCreateDTO request)
     {
         var userId = GetCurrentUserId();
 
+        var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
         var package = await _context.Packages
             .Include(p => p.Business)
             .Include(p => p.Orders)
             .FirstOrDefaultAsync(p => p.Id == request.PackageId);
+
         if (package is null)
         {
             return NotFound("Pachetul nu a fost gasit");
@@ -43,11 +49,32 @@ public class OrderController : ControllerBase
         {
             UserId = userId,
             PackageId = package.Id,
-            Status = "Plasate",
+            Status = "Rezervata",
             Date = DateTime.UtcNow
         };
+
         _context.Orders.Add(order);
         await _context.SaveChangesAsync();
+
+        if (!string.IsNullOrEmpty(userEmail))
+        {
+            var clientSubject = $"Confirmare rezervare - {package.Name}";
+            var clientBody = $"<h3>Salut!</h3><p>Comanda ta pentru <b>{package.Name}</b> de la <b>{package.Business!.Name}</b> a fost rezervată cu succes.</p><p>Te așteptăm să o ridici!</p>";
+
+            await _emailService.SendEmailAsync(userEmail, clientSubject, clientBody);
+        }
+
+
+        var businessEmail = "restaurant@test.com";
+
+        if (!string.IsNullOrEmpty(businessEmail))
+        {
+            var bizSubject = $"Comandă nouă - {package.Name}";
+            var bizBody = $"<h3>O nouă rezervare!</h3><p>Ai o comandă nouă pentru pachetul <b>{package.Name}</b>. Te rugăm să îl pregătești.</p>";
+
+            await _emailService.SendEmailAsync(businessEmail, bizSubject, bizBody);
+        }
+
         return Ok(new OrderGetDTO()
         {
             Id = order.Id,
@@ -59,28 +86,65 @@ public class OrderController : ControllerBase
             BusinessName = package.Business!.Name,
             UserName = order.User?.Name,
             UserContact = order.User?.Contact
-        }
-        );
+        });
     }
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<OrderGetDTO>>> GetMyOrders()
     {
         var userId = GetCurrentUserId();
         var orders = await _context.Orders
-        .Where(o => o.UserId == userId)
-        .OrderByDescending(o => o.Date)
-        .Select(o => new OrderGetDTO
-        {
-            Id = o.Id,
-            Date = o.Date,
-            Status = o.Status,
-            Price = o.Package!.Price,
-            BusinessId = o.Package.BusinessId,
-            BusinessName = o.Package.Business!.Name,
-            PackageName = o.Package.Name
-        }).ToListAsync();
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.Date)
+            .Select(o => new OrderGetDTO
+            {
+                Id = o.Id,
+                Date = o.Date,
+                Status = o.Status,
+                Price = o.Package!.Price,
+                BusinessId = o.Package.BusinessId,
+                BusinessName = o.Package.Business!.Name,
+                PackageName = o.Package.Name
+            }).ToListAsync();
+
         return Ok(orders);
     }
+
+    [HttpPatch("{id}/completeaza")]
+    public async Task<IActionResult> CompleteOrder(int id)
+    {
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Package)
+            .ThenInclude(p => p.Business)
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (order == null)
+        {
+            return NotFound("Comanda nu a fost gasita.");
+        }
+
+        if (order.Status == "Completata")
+        {
+            return BadRequest("Comanda a fost deja completata.");
+        }
+
+        order.Status = "Completata";
+
+        await _context.SaveChangesAsync();
+
+        if (order.User != null && !string.IsNullOrEmpty(order.User.Email))
+        {
+            var userEmail = order.User.Email;
+            var subject = $"Comandă ridicată - {order.Package?.Name}";
+            var body = $"<h3>Felicitări!</h3><p>Comanda ta pentru <b>{order.Package?.Name}</b> de la <b>{order.Package?.Business?.Name}</b> a fost ridicată cu succes.</p><p>Sperăm să îți placă!</p>";
+
+            await _emailService.SendEmailAsync(userEmail, subject, body);
+        }
+
+        return Ok(new { Message = "Statusul comenzii a fost actualizat la Completata." });
+    }
+
     private int GetCurrentUserId()
     {
         var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);

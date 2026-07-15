@@ -4,6 +4,7 @@ using EcoMeal.API.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using EcoMeal.API.Application.Constants;
+using EcoMeal.API.Application.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,7 +48,7 @@ builder.Services.AddIdentityApiEndpoints<User>(options =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
-
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

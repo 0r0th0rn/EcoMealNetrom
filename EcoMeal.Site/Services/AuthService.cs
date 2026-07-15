@@ -59,6 +59,18 @@ public class AuthService
                 {
                     customProvider.NotifyUserAuthentication(Token, roles);
                 }
+
+                // Send login notification email
+                try
+                {
+                    var notifyRequest = new HttpRequestMessage(HttpMethod.Post, "api/auth/login-notify");
+                    notifyRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+                    await _http.SendAsync(notifyRequest);
+                }
+                catch
+                {
+                    // Don't fail login if notification fails
+                }
             }
 
             return AuthResult.Ok();
