@@ -1,4 +1,4 @@
-﻿@using EcoMeal.Site.Components.BusinessCard
+@using EcoMeal.Site.Components.BusinessCard
 @using Microsoft.AspNetCore.Components.Authorization
 
 @if (Businesses == null)
@@ -7,19 +7,23 @@
 }
 else
 {
-	<div class="row" justify-content-center>
-		<AuthorizeView Roles="Admin">
-			<a href="/addBusiness" class="btn btn-success mb-4 rounded-pill">
-				<i class="bi bi-plus-lg me-2"></i> Adaugă Afacere Nouă
-			</a>
-		</AuthorizeView>
+	<div class="container py-4">
+		<div class="row justify-content-center">
+			<AuthorizeView Roles="Admin">
+				<div class="col-12 text-center mb-4">
+					<a href="/addBusiness" class="btn btn-success rounded-pill shadow-sm px-4">
+						<i class="bi bi-plus-lg me-2"></i> Adaugă Afacere Nouă
+					</a>
+				</div>
+			</AuthorizeView>
 
-		@foreach (var business in Businesses)
-		{
-			<div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-				<BusinessCard Business="business" OnDeleteRequested="HandleDelete" />
-			</div>
-		}
+			@foreach (var business in Businesses)
+			{
+				<div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+					<BusinessCard Business="business" OnDeleteRequested="HandleDelete" />
+				</div>
+			}
+		</div>
 	</div>
 }
 

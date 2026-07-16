@@ -4,53 +4,68 @@
 
 @namespace EcoMeal.Site.Components.Layout
 
-<nav class="navbar sticky-top p-0 px-2" style="height: 60px;">
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top px-3 shadow-sm" style="min-height: 60px;">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <a class="navbar-brand m-0" href="/">
+            <img src="/EcoMealImages/EcoMeal.logo.png" alt="EcoMeal Logo" style="height: 40px; width: auto; object-fit: contain;">
+        </a>
 
-    <a class="navbar-brand m-0" href="/">
-        <img src="/EcoMealImages/EcoMeal.logo.png" alt="EcoMeal Logo"
-             style="height: 50px; width: auto; object-fit: contain;">
-    </a>
+        <!-- Hamburger Toggler -->
+        <button class="navbar-toggler border-0 shadow-none" type="button" @onclick="ToggleNavMenu" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="mx-3 flex-grow-1 d-none d-sm-flex justify-content-center" style="max-width: 500px;">
-        <SearchBar />
-    </div>
-
-    <div class="ms-auto d-flex align-items-center gap-3">
-        @if (AuthService.IsAuthenticated)
-        {
-            <a class="btn btn-outline-secondary btn-sm me-2" href="/orders">Comenzi</a>
-            <div class="d-flex align-items-center text-dark bg-light rounded-pill shadow-sm border">
-                <a href="/profile"
-                   class="text-decoration-none d-flex align-items-center text-dark bg-light rounded-pill shadow-sm border btn-hover-light">
-                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center"
-                         style="width: 36px; height: 36px; font-weight: 600;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
-                             class="bi bi-person-fill" viewBox="0 0 16 16">
-                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                        </svg>
-                    </div>
-                    <span class="fw-medium text-account px-2" style="font-size: 0.9rem;">Contul meu</span>
-                </a>
+        <!-- Collapsible Content -->
+        <div class="navbar-collapse @NavMenuCssClass" id="navbarContent">
+            <!-- Search Bar -->
+            <div class="mx-auto my-3 my-lg-0 w-100 d-flex justify-content-center" style="max-width: 500px;">
+                <SearchBar />
             </div>
 
-            <button
-                class="btn btn-light d-flex justify-content-center align-items-center btn-sm rounded-pill px-3 border shadow-sm fw-medium text-secondary hover-danger"
-                @onclick="HandleLogout">
-                <span class="material-symbols-outlined">
-                    logout
-                </span>Deconectare
-            </button>
-        }
-        else
-        {
-            <a class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm fw-medium" href="/login">
-                Autentificare
-            </a>
-        }
+            <!-- Right Actions -->
+            <div class="d-flex flex-column flex-lg-row align-items-center gap-3 ms-lg-auto">
+                @if (AuthService.IsAuthenticated)
+                {
+                    <a class="btn btn-outline-secondary btn-sm w-100 w-lg-auto" href="/orders" @onclick="CloseNavMenu">Comenzi</a>
+                    
+                    <a href="/profile" @onclick="CloseNavMenu" class="text-decoration-none d-flex align-items-center text-dark bg-light rounded-pill shadow-sm border btn-hover-light w-100 w-lg-auto px-2 py-1">
+                        <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center flex-shrink-0" style="width: 32px; height: 32px; font-weight: 600;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <span class="fw-medium text-account px-2" style="font-size: 0.9rem;">Contul meu</span>
+                    </a>
+
+                    <button class="btn btn-light btn-sm rounded-pill px-3 py-2 border shadow-sm fw-medium text-secondary hover-danger w-100 w-lg-auto d-flex align-items-center justify-content-center gap-2" @onclick="HandleLogout">
+                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">logout</span> Deconectare
+                    </button>
+                }
+                else
+                {
+                    <a class="btn btn-primary rounded-pill px-4 py-2 shadow-sm fw-medium w-100 w-lg-auto text-center" href="/login" @onclick="CloseNavMenu">
+                        Autentificare
+                    </a>
+                }
+            </div>
+        </div>
     </div>
 </nav>
 
 @code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void CloseNavMenu()
+    {
+        collapseNavMenu = true;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -63,6 +78,7 @@
     private async Task HandleLogout()
     {
         await AuthService.LogoutAsync();
+        CloseNavMenu();
         Navigation.NavigateTo("/", forceLoad: true);
     }
 }

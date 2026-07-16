@@ -111,20 +111,27 @@
 
 <style>
     .pkg-card-hover {
-        border-radius: 1rem;
+        border-radius: var(--radius-xl);
         overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform var(--transition-base), box-shadow var(--transition-base);
         cursor: default;
+        border: 1px solid var(--eco-gray-100);
     }
 
     .pkg-card-hover:hover {
         transform: translateY(-6px);
-        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.12) !important;
+        box-shadow: var(--shadow-xl) !important;
+        border-color: var(--eco-primary-light);
     }
 
     .pkg-img-height {
-        height: 180px;
+        height: 200px;
         object-fit: cover;
+        transition: transform var(--transition-slow);
+    }
+
+    .pkg-card-hover:hover .pkg-img-height {
+        transform: scale(1.05);
     }
 
     .pkg-line-clamp-2 {
@@ -135,11 +142,12 @@
     }
 
     .pkg-backdrop-blur {
-        backdrop-filter: blur(4px);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
     }
 
     .btn-hover-edit {
-        transition: all 0.2s;
+        transition: all var(--transition-base);
     }
 
     .btn-hover-edit:hover {

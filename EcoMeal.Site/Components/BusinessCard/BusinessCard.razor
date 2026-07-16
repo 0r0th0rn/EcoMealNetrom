@@ -1,4 +1,4 @@
-﻿@using EcoMeal.Site.Models
+@using EcoMeal.Site.Models
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IJSRuntime JS
 
@@ -55,19 +55,27 @@
 
 <style>
     .custom-card-hover {
-        border-radius: 1rem;
+        border-radius: var(--radius-xl);
         overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform var(--transition-base), box-shadow var(--transition-base);
+        cursor: pointer;
+        border: 1px solid var(--eco-gray-100);
     }
 
     .custom-card-hover:hover {
         transform: translateY(-8px);
-        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.12) !important;
+        box-shadow: var(--shadow-xl) !important;
+        border-color: var(--eco-primary-light);
     }
 
     .custom-img-height {
-        height: 180px;
+        height: 200px;
         object-fit: cover;
+        transition: transform var(--transition-slow);
+    }
+
+    .custom-card-hover:hover .custom-img-height {
+        transform: scale(1.05);
     }
 
     .line-clamp-2 {
@@ -78,18 +86,19 @@
     }
 
     .backdrop-blur {
-        backdrop-filter: blur(4px);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
     }
 
-    
     .btn-hover-danger {
-        transition: all 0.2s;
+        transition: all var(--transition-base);
     }
 
     .btn-hover-danger:hover {
-        background-color: #dc3545;
+        background-color: var(--eco-danger);
         color: white;
         transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
     }
 </style>
 
