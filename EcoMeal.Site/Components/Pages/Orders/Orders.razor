@@ -1,52 +1,112 @@
 @page "/orders"
+@rendermode InteractiveServer
+@using EcoMeal.Site.Models
+@using EcoMeal.Site.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inject OrderService OrderServices
 
-<PageTitle>Comenzile mele</PageTitle>
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">
+            <i class="bi bi-bag-check-fill text-primary me-2"></i> Comenzile Mele
+        </h2>
+    </div>
 
-<div class="container">
-    <h1>Comenzile Mele</h1>
-    @if (MyOrders is null)
+    @if (IsLoading)
     {
-        <p>Loading...</p>
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Se încarcă...</span>
+            </div>
+        </div>
     }
-    else if (!MyOrders.Any())
+    else if (!AllOrders.Any())
     {
-        <div class="alert alert-light text-center text-muted">
-            Nu ai nicio comanda inca
+        <div class="text-center py-5 bg-light rounded-4 shadow-sm border-0">
+            <i class="bi bi-inbox text-muted fs-1 mb-3 d-block"></i>
+            <h4 class="text-dark fw-bold">Nu ai nicio comandă</h4>
+            <p class="text-muted">Încă nu ai rezervat niciun pachet. Explorează afacerile din zonă!</p>
         </div>
     }
     else
     {
-        <div class="row g-3">
-            @foreach (var order in MyOrders)
-            {
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h5 class="card-title mb-1">@order.PackageName</h5>
-                                    <p class="text-muted samll">@order.BusinessName</p>
-                                    <p class="text-muted samll">@order.Date.ToString("dd.MM.yyyy HH:mm")</p>
+        <!-- SECȚIUNEA 1: Comenzi În Curs -->
+        <h4 class="text-dark fw-bold mb-3 border-bottom pb-2">În Curs / Rezervate</h4>
+
+        @if (OngoingOrders.Any())
+        {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+                @foreach (var order in OngoingOrders)
+                {
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm rounded-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="badge bg-warning text-dark rounded-pill">@order.Status</span>
+                                    <span class="text-muted small">@order.Date.ToString("dd.MM.yyyy HH:mm")</span>
+                                </div>
+                                <h5 class="card-title fw-bold text-dark mb-1">@order.PackageName</h5>
+                                <p class="card-text text-secondary small mb-3">
+                                    <i class="bi bi-shop me-1"></i> @order.BusinessName
+                                </p>
+                                <div class="fs-5 fw-bold text-dark mb-3">
+                                    @order.Price.ToString("F2") RON
                                 </div>
                             </div>
-                            <div class="text-end">
-                                <span class="badge rounded-pill bg-success-subtle text-success-emphasis">@order.Status</span>
-                                <div class="fw-semibold">@order.Price RON</div>
-                            </div>
-                            @if (order.Status == "Rezervata")
-                            {
-                                <button class="btn btn-sm btn-success" @onclick="() => OrderService.MarkAsPickedUpAsync(order.Id)">
-                                    Marchează ca Ridicată
-                                </button>
-                            }
-                            else if (order.Status == "Completata")
-                            {
-                                <span class="badge bg-success">Finalizată</span>
-                            }
+
+                            <AuthorizeView Roles="Admin">
+                                <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                                    <button class="btn btn-success w-100 rounded-pill shadow-sm"
+                                            @onclick="() => MarkAsCompleted(order.Id)">
+                                        <i class="bi bi-check2-circle me-1"></i> Marchează ca ridicată
+                                    </button>
+                                </div>
+                            </AuthorizeView>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted mb-5">Nu ai nicio comandă în curs.</p>
+        }
+
+        <!-- SECȚIUNEA 2: Istoric / Comenzi Finalizate -->
+        <h4 class="text-dark fw-bold mb-3 border-bottom pb-2">Istoric Comenzi (Ridicate)</h4>
+
+        @if (CompletedOrders.Any())
+        {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @foreach (var order in CompletedOrders)
+                {
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 bg-light opacity-75">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="badge bg-success rounded-pill">@order.Status</span>
+                                    <span class="text-muted small">@order.Date.ToString("dd.MM.yyyy HH:mm")</span>
+                                </div>
+                                <h5 class="card-title fw-bold text-dark mb-1 text-decoration-line-through">@order.PackageName</h5>
+                                <p class="card-text text-secondary small mb-3">
+                                    <i class="bi bi-shop me-1"></i> @order.BusinessName
+                                </p>
+                                <div class="fs-5 fw-bold text-secondary mb-3">
+                                    @order.Price.ToString("F2") RON
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">Nu ai nicio comandă finalizată încă.</p>
+        }
     }
 </div>
+
+@code {
+
+}

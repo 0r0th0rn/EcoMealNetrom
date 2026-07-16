@@ -27,7 +27,6 @@ public class OrderController : ControllerBase
     public async Task<ActionResult<OrderGetDTO>> PlaceOrder([FromBody] OrderCreateDTO request)
     {
         var userId = GetCurrentUserId();
-
         var userEmail = User.FindFirstValue(ClaimTypes.Email);
 
         var package = await _context.Packages
@@ -40,10 +39,12 @@ public class OrderController : ControllerBase
             return NotFound("Pachetul nu a fost gasit");
         }
 
-        if (package.Orders.Any())
+        if (package.AvailableQty <= 0)
         {
-            return BadRequest("Pachetul nu mai e disponibil");
+            return BadRequest("Stoc epuizat. Pachetul nu mai este disponibil.");
         }
+
+        package.AvailableQty--;
 
         var order = new Order
         {
@@ -54,26 +55,38 @@ public class OrderController : ControllerBase
         };
 
         _context.Orders.Add(order);
+
         await _context.SaveChangesAsync();
 
-        if (!string.IsNullOrEmpty(userEmail))
-        {
-            var clientSubject = $"Confirmare rezervare - {package.Name}";
-            var clientBody = $"<h3>Salut!</h3><p>Comanda ta pentru <b>{package.Name}</b> de la <b>{package.Business!.Name}</b> a fost rezervată cu succes.</p><p>Te așteptăm să o ridici!</p>";
-
-            await _emailService.SendEmailAsync(userEmail, clientSubject, clientBody);
-        }
-
-
+        var packageName = package.Name;
+        var businessName = package.Business!.Name;
         var businessEmail = "restaurant@test.com";
 
-        if (!string.IsNullOrEmpty(businessEmail))
+        _ = Task.Run(async () =>
         {
-            var bizSubject = $"Comandă nouă - {package.Name}";
-            var bizBody = $"<h3>O nouă rezervare!</h3><p>Ai o comandă nouă pentru pachetul <b>{package.Name}</b>. Te rugăm să îl pregătești.</p>";
+            try
+            {
+                if (!string.IsNullOrEmpty(userEmail))
+                {
+                    var clientSubject = $"Confirmare rezervare - {packageName}";
+                    var clientBody = $"<h3>Salut!</h3><p>Comanda ta pentru <b>{packageName}</b> de la <b>{businessName}</b> a fost rezervată cu succes.</p><p>Te așteptăm să o ridici!</p>";
 
-            await _emailService.SendEmailAsync(businessEmail, bizSubject, bizBody);
-        }
+                    await _emailService.SendEmailAsync(userEmail, clientSubject, clientBody);
+                }
+
+                if (!string.IsNullOrEmpty(businessEmail))
+                {
+                    var bizSubject = $"Comandă nouă - {packageName}";
+                    var bizBody = $"<h3>O nouă rezervare!</h3><p>Ai o comandă nouă pentru pachetul <b>{packageName}</b>. Te rugăm să îl pregătești.</p>";
+
+                    await _emailService.SendEmailAsync(businessEmail, bizSubject, bizBody);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Eroare la trimiterea e-mailului în background: {ex.Message}");
+            }
+        });
 
         return Ok(new OrderGetDTO()
         {
@@ -105,6 +118,28 @@ public class OrderController : ControllerBase
                 BusinessId = o.Package.BusinessId,
                 BusinessName = o.Package.Business!.Name,
                 PackageName = o.Package.Name
+            }).ToListAsync();
+
+        return Ok(orders);
+    }
+
+    [HttpGet("all")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<OrderGetDTO>>> GetAllOrders()
+    {
+        var orders = await _context.Orders
+            .OrderByDescending(o => o.Date)
+            .Select(o => new OrderGetDTO
+            {
+                Id = o.Id,
+                Date = o.Date,
+                Status = o.Status,
+                Price = o.Package!.Price,
+                BusinessId = o.Package.BusinessId,
+                BusinessName = o.Package.Business!.Name,
+                PackageName = o.Package.Name,
+                UserName = o.User != null ? o.User.Name : null,
+                UserContact = o.User != null ? o.User.Contact : null
             }).ToListAsync();
 
         return Ok(orders);
