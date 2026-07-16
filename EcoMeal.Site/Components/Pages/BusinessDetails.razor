@@ -1,9 +1,11 @@
 @page "/business/{Id:int}"
 @rendermode InteractiveServer
+@implements IDisposable
 @using EcoMeal.Site.Models
-@using EcoMeal.Site.Services;
-@using EcoMeal.Site.Components.PackageCard;
+@using EcoMeal.Site.Services
+@using EcoMeal.Site.Components.PackageCard
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 
@@ -155,6 +157,11 @@
         transform: translateY(-2px);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     }
+
+    /* Asigură că la scroll automat elementul nu se ascunde sub navbar-ul de 60px */
+    .package-item {
+        scroll-margin-top: 85px;
+    }
 </style>
 
 @code {
@@ -172,6 +179,9 @@
     protected override async Task OnInitializedAsync()
     {
         Business = await businessService.GetOneById(Id);
+
+        // Ne abonăm la schimbările de URL pentru a gestiona ancorajele pe aceeași pagină
+        NavigationManager.LocationChanged += OnLocationChanged;
     }
 
     public void NavigateToAddPackage()
@@ -213,6 +223,7 @@
 
         return defaultImage;
     }
+
     private async Task RefreshPackagesList(int deletedPackageId)
     {
         var updatedBusiness = await businessService.GetOneById(Id);
@@ -223,18 +234,40 @@
             StateHasChanged();
         }
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // Se execută la prima intrare pe pagină
         if (firstRender && Navigation.Uri.Contains("#"))
         {
-            var fragment = Navigation.Uri.Split('#').Last();
-
-            await JS.InvokeVoidAsync("eval", $@"
-                setTimeout(() => {{
-                    var element = document.getElementById('{fragment}');
-                    if(element) element.scrollIntoView({{ behavior: 'smooth' }});
-                }}, 100); // 100ms delay pentru a ne asigura că DOM-ul a desenat elementele
-            ");
+            await ScrollToFragmentAsync();
         }
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Se execută când utilizatorul caută alt pachet în timp ce e deja pe această pagină
+        if (e.Location.Contains("#"))
+        {
+            await ScrollToFragmentAsync();
+        }
+    }
+
+    private async Task ScrollToFragmentAsync()
+    {
+        var fragment = Navigation.Uri.Split('#').Last();
+
+        await JS.InvokeVoidAsync("eval", $@"
+            setTimeout(() => {{
+                var element = document.getElementById('{fragment}');
+                if(element) element.scrollIntoView({{ behavior: 'smooth' }});
+            }}, 150); 
+        ");
+    }
+
+    // Curățăm abonarea la eveniment când componenta este distrusă pentru a evita memory leaks
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }

@@ -87,6 +87,9 @@ public class BusinessController : ControllerBase
                     Name = p.Name,
                     Description = p.Description,
                     Price = p.Price,
+                    OldPrice = p.OldPrice,
+                    weightInKg = p.weightInKg,
+                    AvailableQty = p.AvailableQty,
                     StartPickup = p.StartRidicare,
                     EndPickup = p.EndRidicare,
                     PackageTypeName = p.PackageType != null ? p.PackageType.Name : ""
@@ -110,6 +113,9 @@ public class BusinessController : ControllerBase
             Name = package.Name,
             Description = package.Description,
             Price = package.Price,
+            OldPrice = package.OldPrice,
+            weightInKg = package.weightInKg,
+            AvailableQty = package.AvailableQty,
             StartRidicare = package.StartPickup,
             EndRidicare = package.EndPickup,
             PackageTypeId = package.PackageTypeId,
@@ -132,6 +138,9 @@ public class BusinessController : ControllerBase
             Name = package.Name,
             Description = package.Description!,
             Price = package.Price,
+            OldPrice = package.OldPrice,
+            weightInKg = package.weightInKg,
+            AvailableQty = package.AvailableQty,
             StartPickup = package.StartRidicare,
             EndPickup = package.EndRidicare,
             PackageTypeId = package.PackageTypeId
@@ -146,6 +155,9 @@ public class BusinessController : ControllerBase
         package.Name = packageDto.Name;
         package.Description = packageDto.Description;
         package.Price = packageDto.Price;
+        package.OldPrice = packageDto.OldPrice;
+        package.weightInKg = packageDto.weightInKg;
+        package.AvailableQty = packageDto.AvailableQty;
         package.StartRidicare = packageDto.StartPickup;
         package.EndRidicare = packageDto.EndPickup;
         package.PackageTypeId = packageDto.PackageTypeId;

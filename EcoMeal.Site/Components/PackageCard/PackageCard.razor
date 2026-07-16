@@ -9,12 +9,23 @@
     <div class="position-relative">
         <img src="@GetImageForPackageType(Package.PackageTypeName)" class="card-img-top pkg-img-height"
              alt="@Package.Name">
+
+        <!-- Badge Tip Pachet -->
         <div class="position-absolute top-0 start-0 m-3">
             <span class="badge bg-primary bg-opacity-75 rounded-pill px-3 py-2 shadow-sm pkg-backdrop-blur">
                 <i class="bi bi-box-seam-fill me-1"></i> @Package.PackageTypeName
             </span>
         </div>
-        <div class="position-absolute bottom-0 end-0 m-3">
+
+        <!-- Secțiune Prețuri -->
+        <div class="position-absolute bottom-0 end-0 m-3 d-flex flex-column align-items-end">
+            @if (Package.OldPrice > 0 && Package.OldPrice > Package.Price)
+            {
+                <span class="badge bg-danger rounded-pill px-2 py-1 shadow-sm mb-1 pkg-backdrop-blur"
+                      style="text-decoration: line-through; opacity: 0.9; font-size: 0.75rem;">
+                    @Package.OldPrice.ToString("F2") RON
+                </span>
+            }
             <span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow fw-bold fs-6">
                 @Package.Price.ToString("F2") RON
             </span>
@@ -31,6 +42,17 @@
             </p>
         }
 
+        <!-- Detalii Noi: Stoc și Greutate -->
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-light">
+            <span
+                class="badge bg-info text-dark bg-opacity-10 border border-info rounded-pill px-2 py-1 small fw-medium">
+                <i class="bi bi-boxes me-1"></i> @Package.AvailableQty buc.
+            </span>
+            <span class="text-secondary small fw-medium">
+                <i class="bi bi-minecart-loaded me-1"></i> @Package.weightInKg kg
+            </span>
+        </div>
+
         <div class="mt-auto">
             <div class="d-flex align-items-center text-secondary small mb-2">
                 <i class="bi bi-clock-fill text-success me-2"></i>
@@ -42,6 +64,7 @@
             </div>
         </div>
     </div>
+
     <AuthorizeView Roles="Admin">
         <div class="card-footer bg-transparent border-0 pb-3 pt-0">
             <button class="btn btn-outline-warning btn-sm rounded-pill px-3" @onclick="NavigateToEdit">
@@ -52,19 +75,27 @@
             </button>
         </div>
     </AuthorizeView>
+
     <AuthorizeView Roles="User">
         <div class="card-footer bg-transparent border-0 pb-3 pt-0 text-center">
-            <button class="btn btn-primary rounded-pill px-4 shadow-sm w-100 btn-hover-effect" @onclick="OnOrderClicked" disabled="@isOrdering">
+            <!-- Dezactivăm butonul dacă stocul este 0 -->
+            <button class="btn btn-primary rounded-pill px-4 shadow-sm w-100 btn-hover-effect" @onclick="OnOrderClicked"
+                    disabled="@(isOrdering || Package.AvailableQty <= 0)">
                 @if (isOrdering)
                 {
                     <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                     <span>Se procesează...</span>
+                }
+                else if (Package.AvailableQty <= 0)
+                {
+                    <i class="bi bi-x-circle me-2"></i> <span>Stoc Epuizat</span>
                 }
                 else
                 {
                     <i class="bi bi-cart-plus me-2"></i> <span>Comandă</span>
                 }
             </button>
+
             @if (orderSuccess.HasValue)
             {
                 <div class="mt-2 small @(orderSuccess.Value ? "text-success" : "text-danger")">
@@ -73,7 +104,6 @@
             }
         </div>
     </AuthorizeView>
-
 </div>
 
 <style>
@@ -131,7 +161,7 @@
     [Parameter] public EventCallback<int> OnPackageDeleted { get; set; }
 
     [Inject] public required BusinessService BusinessService { get; set; }
-    
+
     private bool isOrdering = false;
     private bool? orderSuccess = null;
 
@@ -146,13 +176,15 @@
 
     private async Task OnOrderClicked()
     {
+        if (Package.AvailableQty <= 0) return; // Preventie extra
+
         isOrdering = true;
         orderSuccess = null;
         StateHasChanged();
 
         var success = await OrderService.PlaceOrderAsync(Package.Id);
         orderSuccess = success;
-        
+
         isOrdering = false;
         StateHasChanged();
     }
@@ -170,7 +202,6 @@
 
         if (lowerType.Contains("vegetarian"))
         {
-            // Fresh colorful vegetable salad
             return "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&auto=format&fit=crop";
         }
         else if (lowerType.Contains("surprise"))

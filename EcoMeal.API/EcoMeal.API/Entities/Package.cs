@@ -10,6 +10,9 @@ public class Package
     [MaxLength(500)]
     public string? Description { get; set; }
     public decimal Price { get; set; }
+    public decimal OldPrice { get; set; }
+    public double weightInKg { get; set; }
+    public int AvailableQty { get; set; }
     public required DateTime StartRidicare { get; set; }
     public required DateTime EndRidicare { get; set; }
     public int BusinessId { get; set; }

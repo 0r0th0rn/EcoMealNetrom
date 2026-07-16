@@ -14,6 +14,11 @@ public class PackageAddModel
     [Required]
     [Range(0, 1000)]
     public double Price { get; set; }
+    public double OldPrice { get; set; }
+    [Required]
+    public double weightInKg { get; set; }
+    [Required]
+    public int AvailableQty { get; set; }
     [Required]
     public DateTime StartPickup { get; set; }
     [Required]
