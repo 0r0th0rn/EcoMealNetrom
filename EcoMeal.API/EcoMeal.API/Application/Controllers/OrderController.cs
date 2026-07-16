@@ -38,6 +38,10 @@ public class OrderController : ControllerBase
         {
             return NotFound("Pachetul nu a fost gasit");
         }
+        if (package.EndRidicare < DateTime.Now)
+        {
+            return BadRequest("Pachetul nu mai poate fi comandat deoarece timpul de ridicare a expirat.");
+        }
 
         if (package.AvailableQty <= 0)
         {
@@ -51,7 +55,7 @@ public class OrderController : ControllerBase
             UserId = userId,
             PackageId = package.Id,
             Status = "Rezervata",
-            Date = DateTime.UtcNow
+            Date = DateTime.Now
         };
 
         _context.Orders.Add(order);
@@ -184,5 +188,39 @@ public class OrderController : ControllerBase
     {
         var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return int.Parse(userIdValue!);
+    }
+
+    [HttpGet("stats")]
+    public async Task<ActionResult<UserStatsDTO>> GetMyStats()
+    {
+        var userId = GetCurrentUserId();
+
+        var userOrders = await _context.Orders
+            .Include(o => o.Package)
+            .Where(o => o.UserId == userId)
+            .ToListAsync();
+
+        double totalWeight = 0;
+        decimal totalMoney = 0;
+
+        foreach (var order in userOrders)
+        {
+            if (order.Package != null)
+            {
+                totalWeight += order.Package.weightInKg;
+
+                if (order.Package.OldPrice > order.Package.Price)
+                {
+                    totalMoney += (order.Package.OldPrice - order.Package.Price);
+                }
+            }
+        }
+
+        return Ok(new UserStatsDTO
+        {
+            TotalOrders = userOrders.Count,
+            TotalWeightSaved = totalWeight,
+            TotalMoneySaved = totalMoney
+        });
     }
 }

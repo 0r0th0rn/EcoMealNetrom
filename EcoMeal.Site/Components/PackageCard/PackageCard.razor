@@ -42,7 +42,6 @@
             </p>
         }
 
-        <!-- Detalii Noi: Stoc și Greutate -->
         <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-light">
             <span
                 class="badge bg-info text-dark bg-opacity-10 border border-info rounded-pill px-2 py-1 small fw-medium">
@@ -78,13 +77,17 @@
 
     <AuthorizeView Roles="User">
         <div class="card-footer bg-transparent border-0 pb-3 pt-0 text-center">
-            <!-- Dezactivăm butonul dacă stocul este 0 -->
             <button class="btn btn-primary rounded-pill px-4 shadow-sm w-100 btn-hover-effect" @onclick="OnOrderClicked"
-                    disabled="@(isOrdering || Package.AvailableQty <= 0)">
+                    disabled="@(isOrdering || Package.AvailableQty <= 0 || IsExpired)">
+
                 @if (isOrdering)
                 {
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span class="spinner-border spinner-border-sm me-2"></span>
                     <span>Se procesează...</span>
+                }
+                else if (IsExpired)
+                {
+                    <i class="bi bi-calendar-x me-2"></i> <span>Expirat</span>
                 }
                 else if (Package.AvailableQty <= 0)
                 {
@@ -152,7 +155,7 @@
 
     [Parameter]
     public int BusinessId { get; set; }
-
+    private bool IsExpired => Package.EndPickup < DateTime.Now;
     private void NavigateToEdit()
     {
         NavigationManager.NavigateTo($"/business/{BusinessId}/editPackage/{Package.Id}");
@@ -176,7 +179,7 @@
 
     private async Task OnOrderClicked()
     {
-        if (Package.AvailableQty <= 0) return; // Preventie extra
+        if (Package.AvailableQty <= 0) return;
 
         isOrdering = true;
         orderSuccess = null;

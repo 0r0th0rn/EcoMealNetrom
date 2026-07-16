@@ -13,6 +13,8 @@ public class OrderService
         _authService = authService;
     }
 
+    public HttpClient GetHttpClient() => _http;
+
     public async Task<bool> PlaceOrderAsync(int packageId)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "api/order")
@@ -80,6 +82,23 @@ public class OrderService
         catch
         {
             return false;
+        }
+    }
+    public async Task<UserStatsModel> GetMyStatsAsync()
+    {
+        try
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/order/stats");
+            await AddAuthHeaderAsync(request);
+
+            var response = await _http.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<UserStatsModel>() ?? new UserStatsModel();
+        }
+        catch
+        {
+            return new UserStatsModel();
         }
     }
 }

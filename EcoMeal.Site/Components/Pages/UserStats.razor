@@ -1,0 +1,149 @@
+@page "/profile"
+@rendermode InteractiveServer
+@using EcoMeal.Site.Models
+@using EcoMeal.Site.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Net.Http.Json
+@inject OrderService OrderService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="bg-primary bg-opacity-10 p-5 text-center">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow-sm mb-3"
+                         style="width: 80px; height: 80px;">
+                        <i class="bi bi-person-fill fs-1"></i>
+                    </div>
+                    <h2 class="fw-bold text-dark mb-1">Salut, @UserName!</h2>
+                    <p class="text-secondary mb-0">Bine ai venit în panoul tău de control ecologic.</p>
+                </div>
+            </div>
+
+            <h4 class="fw-bold text-dark mb-4">
+                <i class="bi bi-graph-up-arrow text-success me-2"></i> Impactul tău EcoMeal
+            </h4>
+
+            @if (IsLoading)
+            {
+                <div class="d-flex justify-content-center py-5">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Se încarcă...</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    <!-- Cantitate Salvată -->
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift bg-success bg-opacity-10">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-globe-americas text-success fs-1 mb-3"></i>
+                                <h3 class="fw-bold text-dark mb-1">@Stats.TotalWeightSaved.ToString("0.##") kg</h3>
+                                <p class="text-muted small text-uppercase fw-semibold mb-0">Mâncare Salvată</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bani Economisiți -->
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift bg-warning bg-opacity-10">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-piggy-bank text-warning fs-1 mb-3"></i>
+                                <h3 class="fw-bold text-dark mb-1">@Stats.TotalMoneySaved.ToString("F2") RON</h3>
+                                <p class="text-muted small text-uppercase fw-semibold mb-0">Bani Economisiți</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Comenzi -->
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift bg-primary bg-opacity-10">
+                            <div class="card-body text-center p-4">
+                                <i class="bi bi-bag-check text-primary fs-1 mb-3"></i>
+                                <h3 class="fw-bold text-dark mb-1">@Stats.TotalOrders</h3>
+                                <p class="text-muted small text-uppercase fw-semibold mb-0">Pachete Comandate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="mt-5 text-center">
+                <a href="/orders" class="btn btn-outline-primary rounded-pill px-5 fw-medium shadow-sm">
+                    <i class="bi bi-card-list me-2"></i> Vezi istoricul comenzilor
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+    }
+</style>
+
+@code {
+    private UserStatsModel Stats = new();
+    private bool IsLoading = true;
+    private string UserName = "Prieten Eco";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                // Load the auth token first
+                await AuthService.LoadTokenAsync();
+
+                if (!AuthService.IsAuthenticated)
+                {
+                    Navigation.NavigateTo("/login");
+                    return;
+                }
+
+                // Fetch user name
+                try
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, "api/auth/me");
+                    request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", AuthService.Token);
+                    var http = OrderService.GetHttpClient();
+                    var response = await http.SendAsync(request);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var userMe = await response.Content.ReadFromJsonAsync<EcoMeal.Site.Models.Auth.UserMeResponse>();
+                        if (!string.IsNullOrEmpty(userMe?.Name))
+                        {
+                            UserName = userMe.Name;
+                        }
+                    }
+                }
+                catch { }
+
+                Stats = await OrderService.GetMyStatsAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading stats: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+}
