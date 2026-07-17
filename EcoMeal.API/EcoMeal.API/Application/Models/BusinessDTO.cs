@@ -10,4 +10,5 @@ public class BusinessDTO
     public string? Description { get; set; }
     public string? Contact { get; set; }
     public string? BusinessTypeName { get; set; }
+    public double? DistanceInKm { get; set; }
 }

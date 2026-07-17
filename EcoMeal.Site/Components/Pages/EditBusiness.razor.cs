@@ -34,9 +34,12 @@ namespace EcoMeal.Site.Components.Pages
             NavigationManager.NavigateTo("/");
         }
 
-        public void GoBack()
+        public void HandleCoordinatesChanged((double lat, double lng) coords)
         {
-            NavigationManager.NavigateTo("/");
+            BusinessEditModel.Latitude = coords.lat;
+            BusinessEditModel.Longitude = coords.lng;
         }
+
+        public void GoBack() { NavigationManager.NavigateTo("/"); }
     }
 }

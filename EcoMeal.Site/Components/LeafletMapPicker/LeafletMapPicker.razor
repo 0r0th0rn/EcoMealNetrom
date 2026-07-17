@@ -1,0 +1,77 @@
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<div class="leaflet-map-container mt-3 mb-4">
+    <label class="form-label fw-semibold text-secondary">
+        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+        Selectează locația pe hartă
+    </label>
+    <div id="@MapElementId" class="leaflet-map shadow-sm border rounded-3"></div>
+    @if (Latitude != 0 && Longitude != 0)
+    {
+        <div class="text-muted small mt-2">
+            <strong>Coordonate selectate:</strong> @Latitude.ToString("F6"), @Longitude.ToString("F6")
+        </div>
+    }
+</div>
+
+<style>
+    .leaflet-map {
+        height: 350px;
+        width: 100%;
+        z-index: 1; /* prevent overlap with modals/dropdowns */
+    }
+</style>
+
+@code {
+    [Parameter]
+    public double Latitude { get; set; }
+
+    [Parameter]
+    public double Longitude { get; set; }
+
+    [Parameter]
+    public EventCallback<(double lat, double lng)> OnCoordinatesChanged { get; set; }
+
+    private readonly string MapElementId = "map-" + Guid.NewGuid().ToString("N");
+    private DotNetObjectReference<LeafletMapPicker>? dotNetRef;
+    private bool mapInitialized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("leafletInterop.initLeafletMap", MapElementId, Latitude, Longitude, dotNetRef);
+            mapInitialized = true;
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (mapInitialized && Latitude != 0 && Longitude != 0)
+        {
+            await JSRuntime.InvokeVoidAsync("leafletInterop.updateMarkerPosition", MapElementId, Latitude, Longitude);
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnMapClicked(double lat, double lng)
+    {
+        Latitude = lat;
+        Longitude = lng;
+        if (OnCoordinatesChanged.HasDelegate)
+        {
+            await OnCoordinatesChanged.InvokeAsync((lat, lng));
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (mapInitialized)
+        {
+            await JSRuntime.InvokeVoidAsync("leafletInterop.destroyLeafletMap", MapElementId);
+        }
+        dotNetRef?.Dispose();
+    }
+}

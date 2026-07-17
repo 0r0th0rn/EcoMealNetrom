@@ -12,12 +12,15 @@
     <img src="@GetImageForBusinessType(Business.BusinessTypeName)" class="card-img-top custom-img-height"
          alt="@Business.Name">
 
-    <div class="card-body d-flex flex-column">
-
+    <div class="card-body d-flex flex-column text-center p-4">
         <h5 class="card-title fw-bold text-dark mb-1">@Business.Name</h5>
         <p class="text-muted small mb-3 fw-medium">
             <i class="bi bi-shop text-warning me-1"></i> @(string.IsNullOrEmpty(Business.BusinessTypeName) ? "Magazin" :
                                                                                                             Business.BusinessTypeName)
+            @if (Business.DistanceInKm.HasValue)
+            {
+                <span class="badge bg-info text-dark ms-2 rounded-pill shadow-sm" style="font-size: 0.85em;">📍 @Business.DistanceInKm.Value.ToString("F1") km</span>
+            }
         </p>
 
         <p class="card-text text-secondary mb-2 fs-6 d-flex align-items-center">

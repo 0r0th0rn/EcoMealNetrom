@@ -21,6 +21,13 @@ namespace EcoMeal.Site.Components.Pages
             await BusinessService.AddBusinessAsync(BusinessAddModel);
             NavigationManager.NavigateTo("/");
         }
+
+        public void HandleCoordinatesChanged((double lat, double lng) coords)
+        {
+            BusinessAddModel.Latitude = coords.lat;
+            BusinessAddModel.Longitude = coords.lng;
+        }
+
         public void GoBack()
         {
             NavigationManager.NavigateTo("/");

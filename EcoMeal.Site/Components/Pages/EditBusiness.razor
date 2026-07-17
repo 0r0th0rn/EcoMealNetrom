@@ -42,6 +42,11 @@
                     </InputSelect>
                 </div>
 
+                <EcoMeal.Site.Components.LeafletMapPicker.LeafletMapPicker 
+                    Latitude="BusinessEditModel.Latitude" 
+                    Longitude="BusinessEditModel.Longitude" 
+                    OnCoordinatesChanged="HandleCoordinatesChanged" />
+
                 <div class="d-flex justify-content-between mt-5">
                     <button type="button" class="btn btn-light px-4 rounded-pill" @onclick="GoBack">Înapoi</button>
                     <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">Salvează

@@ -17,20 +17,45 @@ public class BusinessController : ControllerBase
         _context = context;
     }
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BusinessDTO>>> GetAll()
+    public async Task<ActionResult<IEnumerable<BusinessDTO>>> GetAll([FromQuery] double? userLat = null, [FromQuery] double? userLng = null)
     {
-        var businessesDTOs = await _context.Businesses
+        var businesses = await _context.Businesses
             .Include(b => b.BusinessType)
-            .Select(b => new BusinessDTO
-            {
-                Id = b.Id,
-                Name = b.Name,
-                Address = b.Address,
-                Description = b.Description,
-                Contact = b.Contact,
-                BusinessTypeName = b.BusinessType.Name
-            }).ToListAsync();
+            .ToListAsync();
+
+        var businessesDTOs = businesses.Select(b => new BusinessDTO
+        {
+            Id = b.Id,
+            Name = b.Name,
+            Address = b.Address,
+            Description = b.Description,
+            Contact = b.Contact,
+            BusinessTypeName = b.BusinessType.Name,
+            DistanceInKm = userLat.HasValue && userLng.HasValue ? Haversine(userLat.Value, userLng.Value, b.Latitude, b.Longitude) : null
+        }).ToList();
+
+        if (userLat.HasValue && userLng.HasValue)
+        {
+            businessesDTOs = businessesDTOs.OrderBy(b => b.DistanceInKm).ToList();
+        }
+
         return Ok(businessesDTOs);
+    }
+
+    private static double Haversine(double lat1, double lon1, double lat2, double lon2)
+    {
+        const double R = 6371; // km
+        var dLat = ToRad(lat2 - lat1);
+        var dLon = ToRad(lon2 - lon1);
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                Math.Cos(ToRad(lat1)) * Math.Cos(ToRad(lat2)) *
+                Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        return Math.Round(R * 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)), 1);
+    }
+
+    private static double ToRad(double degrees)
+    {
+        return degrees * Math.PI / 180;
     }
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
@@ -184,6 +209,8 @@ public class BusinessController : ControllerBase
             Description = businessDto.Description,
             Contact = businessDto.Contact,
             BusinessTypeId = businessDto.BusinessTypeId,
+            Latitude = businessDto.Latitude,
+            Longitude = businessDto.Longitude,
             BusinessType = null!
         };
 
@@ -220,7 +247,9 @@ public class BusinessController : ControllerBase
             Address = business.Address,
             Contact = business.Contact,
             Description = business.Description,
-            BusinessTypeId = business.BusinessTypeId
+            BusinessTypeId = business.BusinessTypeId,
+            Latitude = business.Latitude,
+            Longitude = business.Longitude
         });
     }
 
@@ -239,6 +268,8 @@ public class BusinessController : ControllerBase
         business.Contact = businessDto.Contact;
         business.Description = businessDto.Description;
         business.BusinessTypeId = businessDto.BusinessTypeId;
+        business.Latitude = businessDto.Latitude;
+        business.Longitude = businessDto.Longitude;
 
         await _context.SaveChangesAsync();
 

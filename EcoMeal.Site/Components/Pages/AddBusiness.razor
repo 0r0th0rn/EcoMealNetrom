@@ -48,6 +48,11 @@
                             </InputSelect>
                         </div>
 
+                        <EcoMeal.Site.Components.LeafletMapPicker.LeafletMapPicker 
+                            Latitude="BusinessAddModel.Latitude" 
+                            Longitude="BusinessAddModel.Longitude" 
+                            OnCoordinatesChanged="HandleCoordinatesChanged" />
+
                         <div class="d-flex justify-content-between align-items-center mt-5">
                             <button type="button" class="btn btn-light px-4 rounded-pill" @onclick="GoBack">
                                 <i class="bi bi-arrow-left me-2"></i> Înapoi

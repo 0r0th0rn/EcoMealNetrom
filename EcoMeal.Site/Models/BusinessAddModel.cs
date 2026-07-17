@@ -17,5 +17,7 @@ namespace EcoMeal.Site.Models
 
         [Range(1, int.MaxValue, ErrorMessage = "Alege un tip de afacere.")]
         public int BusinessTypeId { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

@@ -9,9 +9,14 @@ public class BusinessService
     {
         _http = http;
     }
-    public async Task<List<BusinessModel>> GetAllSync()
+    public async Task<List<BusinessModel>> GetAllSync(double? userLat = null, double? userLng = null)
     {
-        var businesses = await _http.GetFromJsonAsync<List<BusinessModel>>("api/Business");
+        var url = "api/Business";
+        if (userLat.HasValue && userLng.HasValue)
+        {
+            url += $"?userLat={userLat.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}&userLng={userLng.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
+        }
+        var businesses = await _http.GetFromJsonAsync<List<BusinessModel>>(url);
         return businesses ?? new List<BusinessModel>();
     }
     public async Task<bool> DeleteAsync(int id)

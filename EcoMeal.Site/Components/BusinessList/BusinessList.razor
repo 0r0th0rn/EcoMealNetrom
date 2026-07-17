@@ -17,6 +17,20 @@ else
 				</div>
 			</AuthorizeView>
 
+			<div class="col-12 d-flex justify-content-end mb-4">
+				<button class="btn btn-outline-primary rounded-pill shadow-sm" @onclick="SortByDistance" disabled="@isSorting">
+					@if (isSorting)
+					{
+						<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+						<span>Se calculează...</span>
+					}
+					else
+					{
+						<i class="bi bi-geo-alt-fill me-2"></i> <span>Sortează după distanță</span>
+					}
+				</button>
+			</div>
+
 			@foreach (var business in Businesses)
 			{
 				<div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
